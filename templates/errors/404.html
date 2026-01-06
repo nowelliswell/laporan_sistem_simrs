@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+<head>
+    <title>Halaman Tidak Ditemukan - BAP SIMRS</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        .error-container { max-width: 500px; margin: 0 auto; }
+        .error-code { font-size: 72px; color: #dc3545; margin: 0; }
+        .error-message { font-size: 24px; margin: 20px 0; }
+        .back-link { color: #007bff; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <h1 class="error-code">404</h1>
+        <p class="error-message">Halaman yang Anda cari tidak ditemukan</p>
+        <p>
+            <a href="{{ url_for('dashboard') }}" class="back-link">← Kembali ke Dashboard</a>
+        </p>
+    </div>
+</body>
+</html>

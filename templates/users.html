@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+    <title>Kelola User - BAP SIMRS</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f8f9fa; }
+        .header { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .content { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .nav-links a { 
+            color: #007bff; 
+            text-decoration: none; 
+            margin-right: 15px; 
+            padding: 8px 16px; 
+            border: 1px solid #007bff; 
+            border-radius: 4px; 
+        }
+        .nav-links a:hover { background-color: #007bff; color: white; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f8f9fa; font-weight: bold; }
+        tr:hover { background-color: #f5f5f5; }
+        .role-admin { color: #dc3545; font-weight: bold; }
+        .role-user { color: #28a745; }
+        .status-active { color: #28a745; }
+        .status-inactive { color: #dc3545; }
+        .alert { 
+            padding: 12px; 
+            margin-bottom: 20px; 
+            border-radius: 4px; 
+        }
+        .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Kelola User</h2>
+        <div class="nav-links">
+            <a href="{{ url_for('add_user') }}">+ Tambah User</a>
+            <a href="{{ url_for('dashboard') }}">← Dashboard</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'error' if category == 'error' else category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <h3>Daftar User</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Terakhir Login</th>
+                    <th>Dibuat</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email or '-' }}</td>
+                    <td>
+                        <span class="role-{{ user.role }}">
+                            {{ 'Administrator' if user.role == 'admin' else 'User' }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-{{ 'active' if user.is_active else 'inactive' }}">
+                            {{ 'Aktif' if user.is_active else 'Nonaktif' }}
+                        </span>
+                    </td>
+                    <td>{{ format_datetime(user.last_login) if user.last_login else 'Belum pernah' }}</td>
+                    <td>{{ format_datetime(user.created_at) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
