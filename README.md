@@ -2,7 +2,6 @@
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![Flask](https://img.shields.io/badge/Flask-2.0+-green.svg)](https://flask.palletsprojects.com/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen.svg)]()
 
 > **Sistem Pelaporan Kesalahan SIMRS** adalah aplikasi web berbasis Flask untuk mengelola dan melacak laporan kesalahan/bug pada Sistem Informasi Manajemen Rumah Sakit (SIMRS). Aplikasi ini menyediakan platform terpusat untuk pelaporan, tracking, dan resolusi masalah teknis dalam lingkungan rumah sakit.
@@ -462,35 +461,6 @@ with app.app_context():
     admin = User.query.filter_by(username='admin').first(); 
     admin.set_password('newpassword'); 
     db.session.commit()"
-```
-
-## 📞 Support
-
-- **Documentation**: [Wiki](https://github.com/yourusername/bap-laporan-simrs/wiki)
-- **Issues**: [GitHub Issues](https://github.com/yourusername/bap-laporan-simrs/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/bap-laporan-simrs/discussions)
-- **Email**: support@yourcompany.com
-
-## 📄 Lisensi
-
-Proyek ini dilisensikan di bawah [MIT License](LICENSE) - lihat file LICENSE untuk detail lengkap.
-
-```
-MIT License
-
-Copyright (c) 2026 BAP SIMRS Team
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-```
-
 ---
 
 ## 🙏 Acknowledgments
@@ -505,7 +475,5 @@ copies or substantial portions of the Software.
 <div align="center">
 
 **[⬆ Kembali ke atas](#bap-simrs---sistem-pelaporan-kesalahan-simrs)**
-
-Made with ❤️ by **BAP SIMRS Team**
 
 </div>
