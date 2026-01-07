@@ -62,6 +62,10 @@ class UserForm(FlaskForm):
         Email(message='Format email tidak valid'),
         Length(max=100, message='Email maksimal 100 karakter')
     ])
+    unit = StringField('Unit', validators=[
+        Optional(),
+        Length(max=100, message='Unit maksimal 100 karakter')
+    ])
     password = PasswordField('Password', validators=[
         DataRequired(message='Password wajib diisi'),
         Length(min=6, message='Password minimal 6 karakter')
@@ -131,6 +135,7 @@ class SearchForm(FlaskForm):
     date_to = DateField('Sampai Tanggal', validators=[Optional()])
     sort_by = SelectField('Urutkan berdasarkan', 
         choices=[
+            ('id', 'ID Laporan'),
             ('created_at', 'Tanggal Dibuat'),
             ('tgl_kejadian', 'Tanggal Kejadian'),
             ('unit', 'Unit'),
@@ -138,15 +143,15 @@ class SearchForm(FlaskForm):
             ('status', 'Status'),
             ('jenis_kesalahan', 'Jenis Kesalahan')
         ],
-        default='created_at',
+        default='id',
         validators=[Optional()]
     )
     sort_order = SelectField('Urutan', 
         choices=[
-            ('desc', 'Terbaru ke Terlama'),
-            ('asc', 'Terlama ke Terbaru')
+            ('asc', 'Terkecil ke Terbesar'),
+            ('desc', 'Terbesar ke Terkecil')
         ],
-        default='desc',
+        default='asc',
         validators=[Optional()]
     )
 

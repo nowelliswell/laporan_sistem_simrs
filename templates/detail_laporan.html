@@ -1,188 +1,123 @@
-<!doctype html>
-<html>
-<head>
-    <title>Detail Laporan - BAP SIMRS</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f8f9fa; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .header { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .content { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .detail-row { 
-            display: flex; 
-            margin-bottom: 15px; 
-            padding-bottom: 15px; 
-            border-bottom: 1px solid #eee; 
-        }
-        .detail-label { 
-            font-weight: bold; 
-            color: #555; 
-            width: 200px; 
-            flex-shrink: 0; 
-        }
-        .detail-value { 
-            color: #333; 
-            flex: 1; 
-        }
-        .status-badge { 
-            padding: 4px 12px; 
-            border-radius: 20px; 
-            font-size: 12px; 
-            font-weight: bold; 
-            text-transform: uppercase; 
-        }
-        .status-pending { background-color: #fff3cd; color: #856404; }
-        .status-in_progress { background-color: #d1ecf1; color: #0c5460; }
-        .status-resolved { background-color: #d4edda; color: #155724; }
-        .btn { 
-            padding: 10px 20px; 
-            border: none; 
-            border-radius: 4px; 
-            text-decoration: none; 
-            display: inline-block; 
-            margin-right: 10px; 
-            cursor: pointer; 
-        }
-        .btn-primary { background-color: #007bff; color: white; }
-        .btn-secondary { background-color: #6c757d; color: white; }
-        .btn:hover { opacity: 0.8; }
-        .file-link { 
-            color: #007bff; 
-            text-decoration: none; 
-            padding: 8px 16px; 
-            border: 1px solid #007bff; 
-            border-radius: 4px; 
-            display: inline-block; 
-        }
-        .file-link:hover { background-color: #007bff; color: white; }
-        .description-box { 
-            background-color: #f8f9fa; 
-            padding: 15px; 
-            border-radius: 4px; 
-            border-left: 4px solid #007bff; 
-            white-space: pre-wrap; 
-        }
-        .alert { 
-            padding: 12px; 
-            margin-bottom: 20px; 
-            border-radius: 4px; 
-        }
-        .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .alert-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h2>Detail Laporan #{{ laporan.id }}</h2>
-        </div>
+{% extends "base.html" %}
 
-        <div class="content">
-            <!-- Flash Messages -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ 'error' if category == 'error' else category }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+{% block title %}Detail Laporan #{{ laporan.id }} - BAP SIMRS{% endblock %}
+{% block page_title %}📋 Detail Laporan #{{ laporan.id }}{% endblock %}
 
-            <div class="detail-row">
-                <div class="detail-label">Unit:</div>
-                <div class="detail-value">{{ laporan.unit }}</div>
-            </div>
-
-            <div class="detail-row">
-                <div class="detail-label">Pelapor:</div>
-                <div class="detail-value">{{ laporan.pelapor }}</div>
+{% block content %}
+<div class="content-panel">
+    <div class="panel-header">
+        <span>🔍</span>
+        Detail Laporan Kesalahan SIMRS
+    </div>
+    <div class="panel-content">
+        <div style="display: grid; gap: 1.5rem;">
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                <div style="flex: 1; min-width: 200px;">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Unit</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">🏥 {{ laporan.unit }}</div>
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Pelapor</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">👤 {{ laporan.pelapor }}</div>
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Status</div>
+                    <div>
+                        {% if laporan.status == 'pending' %}
+                            <span class="status-badge status-pending">⏳ Pending</span>
+                        {% elif laporan.status == 'in_progress' %}
+                            <span class="status-badge status-progress">🔄 In Progress</span>
+                        {% elif laporan.status == 'resolved' %}
+                            <span class="status-badge status-completed">✅ Resolved</span>
+                        {% else %}
+                            <span class="status-badge status-pending">{{ laporan.status }}</span>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
 
             {% if laporan.modul_simrs %}
-            <div class="detail-row">
-                <div class="detail-label">Modul SIMRS:</div>
-                <div class="detail-value">{{ laporan.modul_simrs }}</div>
+            <div style="padding: 1rem; background: var(--surface-hover); border-radius: var(--radius-md); border-left: 4px solid var(--primary-color);">
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Modul SIMRS</div>
+                <div style="font-weight: 600; color: var(--text-primary);">🖥️ {{ laporan.modul_simrs }}</div>
             </div>
             {% endif %}
 
-            <div class="detail-row">
-                <div class="detail-label">Jenis Kesalahan:</div>
-                <div class="detail-value">{{ laporan.jenis_kesalahan }}</div>
-            </div>
-
-            <div class="detail-row">
-                <div class="detail-label">Status:</div>
-                <div class="detail-value">
-                    <span class="status-badge status-{{ laporan.status }}">
-                        {% if laporan.status == 'pending' %}Pending
-                        {% elif laporan.status == 'in_progress' %}In Progress
-                        {% elif laporan.status == 'resolved' %}Resolved
-                        {% else %}{{ laporan.status }}
-                        {% endif %}
-                    </span>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                <div style="padding: 1rem; background: var(--surface-hover); border-radius: var(--radius-md);">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Jenis Kesalahan</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">⚠️ {{ laporan.jenis_kesalahan }}</div>
                 </div>
-            </div>
-
-            <div class="detail-row">
-                <div class="detail-label">Tanggal Kejadian:</div>
-                <div class="detail-value">{{ format_datetime(laporan.tgl_kejadian) }}</div>
-            </div>
-
-            <div class="detail-row">
-                <div class="detail-label">Tanggal Dibuat:</div>
-                <div class="detail-value">{{ format_datetime(laporan.created_at) }}</div>
+                
+                <div style="padding: 1rem; background: var(--surface-hover); border-radius: var(--radius-md);">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Tanggal Kejadian</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">📅 {{ format_datetime(laporan.tgl_kejadian) }}</div>
+                </div>
+                
+                <div style="padding: 1rem; background: var(--surface-hover); border-radius: var(--radius-md);">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Tanggal Dibuat</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">🕒 {{ format_datetime(laporan.created_at) }}</div>
+                </div>
             </div>
 
             {% if laporan.updated_at != laporan.created_at %}
-            <div class="detail-row">
-                <div class="detail-label">Terakhir Diupdate:</div>
-                <div class="detail-value">{{ format_datetime(laporan.updated_at) }}</div>
+            <div style="padding: 1rem; background: #fef3c7; border-radius: var(--radius-md); border-left: 4px solid var(--warning-color);">
+                <div style="font-size: 0.75rem; color: #92400e; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Terakhir Diupdate</div>
+                <div style="font-weight: 600; color: #92400e;">🔄 {{ format_datetime(laporan.updated_at) }}</div>
             </div>
             {% endif %}
 
-            {% if laporan.creator %}
-            <div class="detail-row">
-                <div class="detail-label">Dibuat oleh:</div>
-                <div class="detail-value">{{ laporan.creator.username }}</div>
-            </div>
-            {% endif %}
-
-            {% if laporan.assignee %}
-            <div class="detail-row">
-                <div class="detail-label">Ditugaskan ke:</div>
-                <div class="detail-value">{{ laporan.assignee.username }}</div>
-            </div>
-            {% endif %}
-
-            <div class="detail-row">
-                <div class="detail-label">Deskripsi:</div>
-                <div class="detail-value">
-                    <div class="description-box">{{ laporan.deskripsi }}</div>
+            {% if laporan.creator or laporan.assignee %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                {% if laporan.creator %}
+                <div style="padding: 1rem; background: var(--surface-hover); border-radius: var(--radius-md);">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Dibuat Oleh</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">👨‍💻 {{ laporan.creator.username }}</div>
                 </div>
+                {% endif %}
+                
+                {% if laporan.assignee %}
+                <div style="padding: 1rem; background: var(--surface-hover); border-radius: var(--radius-md);">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Ditugaskan Ke</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">👨‍🔧 {{ laporan.assignee.username }}</div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div style="padding: 1.5rem; background: var(--surface-hover); border-radius: var(--radius-md); border-left: 4px solid var(--primary-color);">
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">📝 Deskripsi Masalah</div>
+                <div style="white-space: pre-wrap; line-height: 1.6; color: var(--text-primary);">{{ laporan.deskripsi }}</div>
             </div>
 
             {% if laporan.bukti_file %}
-            <div class="detail-row">
-                <div class="detail-label">Bukti File:</div>
-                <div class="detail-value">
-                    <a href="{{ url_for('static', filename='uploads/' + laporan.bukti_file) }}" 
-                       target="_blank" class="file-link">
-                        📎 Download {{ laporan.bukti_file }}
-                    </a>
-                </div>
+            <div style="padding: 1.5rem; background: #f0f9ff; border-radius: var(--radius-md); border-left: 4px solid var(--primary-color);">
+                <div style="font-size: 0.75rem; color: var(--primary-color); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">📎 Bukti File</div>
+                <a href="{{ url_for('static', filename='uploads/' + laporan.bukti_file) }}" 
+                   target="_blank" 
+                   class="btn btn-outline"
+                   style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <span>📄</span> Download {{ laporan.bukti_file }}
+                </a>
             </div>
             {% endif %}
 
-            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
-                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Kembali ke Dashboard</a>
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                    <span>←</span> Kembali ke Dashboard
+                </a>
                 {% if current_user.is_admin() %}
-                    <a href="{{ url_for('edit_status', id=laporan.id) }}" class="btn btn-primary">Edit Status</a>
-                    <a href="{{ url_for('delete_laporan', id=laporan.id) }}" class="btn" 
-                       style="background-color: #dc3545; color: white;"
-                       onclick="return confirm('Apakah Anda yakin ingin menghapus laporan ini?')">Hapus Laporan</a>
+                    <a href="{{ url_for('edit_status', id=laporan.id) }}" class="btn btn-primary">
+                        <span>✏️</span> Edit Status
+                    </a>
+                    <a href="{{ url_for('delete_laporan', id=laporan.id) }}" 
+                       class="btn btn-danger"
+                       onclick="return confirm('Apakah Anda yakin ingin menghapus laporan ini?')">
+                        <span>🗑️</span> Hapus Laporan
+                    </a>
                 {% endif %}
             </div>
         </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

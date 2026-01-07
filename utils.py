@@ -126,8 +126,8 @@ def build_search_query(form_data):
         query = query.filter(Laporan.tgl_kejadian < end_date)
     
     # Sorting
-    sort_by = form_data.get('sort_by', 'created_at')
-    sort_order = form_data.get('sort_order', 'desc')
+    sort_by = form_data.get('sort_by', 'id')
+    sort_order = form_data.get('sort_order', 'asc')
     
     if hasattr(Laporan, sort_by):
         sort_column = getattr(Laporan, sort_by)

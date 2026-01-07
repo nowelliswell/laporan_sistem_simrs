@@ -133,8 +133,8 @@ def dashboard():
             search_form.status_filter.data = request.args.get('status_filter', '')
             search_form.jenis_filter.data = request.args.get('jenis_filter', '')
             search_form.pelapor_filter.data = request.args.get('pelapor_filter', '')
-            search_form.sort_by.data = request.args.get('sort_by', 'created_at')
-            search_form.sort_order.data = request.args.get('sort_order', 'desc')
+            search_form.sort_by.data = request.args.get('sort_by', 'id')
+            search_form.sort_order.data = request.args.get('sort_order', 'asc')
             
             # Handle date filters
             if request.args.get('date_from'):
@@ -154,8 +154,8 @@ def dashboard():
             # Build filtered query
             query = build_search_query(request.args)
         else:
-            # Default query
-            query = Laporan.query.order_by(Laporan.created_at.desc())
+            # Default query - sort by ID ascending for sequential order
+            query = Laporan.query.order_by(Laporan.id.asc())
         
         # Pagination
         page = request.args.get('page', 1, type=int)
@@ -537,6 +537,7 @@ def add_user():
             user = User(
                 username=sanitize_input(form.username.data),
                 email=sanitize_input(form.email.data) if form.email.data else None,
+                unit=sanitize_input(form.unit.data) if form.unit.data else None,
                 role=form.role.data
             )
             user.set_password(form.password.data)
@@ -575,8 +576,8 @@ def statistik():
             func.count(Laporan.id).label('count')
         ).group_by(Laporan.jenis_kesalahan).all()
         
-        # Get recent activity (last 10 reports)
-        recent_reports = Laporan.query.order_by(Laporan.created_at.desc()).limit(10).all()
+        # Get recent activity (last 10 reports ordered by ID ascending)
+        recent_reports = Laporan.query.order_by(Laporan.id.asc()).limit(10).all()
         
         stats_data = {
             'total_laporan': total_laporan,

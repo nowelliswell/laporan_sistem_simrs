@@ -1,155 +1,226 @@
-<!doctype html>
-<html>
-<head>
-    <title>Statistik - BAP SIMRS</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f8f9fa; }
-        .header { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .header h2 { margin: 0; color: #333; }
-        .nav-links { margin-top: 15px; }
-        .nav-links a { 
-            color: #007bff; 
-            text-decoration: none; 
-            margin-right: 15px; 
-            padding: 8px 16px; 
-            border: 1px solid #007bff; 
-            border-radius: 4px; 
-        }
-        .nav-links a:hover { background-color: #007bff; color: white; }
-        .content { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        .stats-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-            gap: 20px; 
-            margin-bottom: 30px; 
-        }
-        .stat-card { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-            color: white; 
-            padding: 20px; 
-            border-radius: 8px; 
-            text-align: center; 
-        }
-        .stat-card.pending { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333; }
-        .stat-card.in-progress { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; }
-        .stat-card.resolved { background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%); color: #333; }
-        .stat-number { font-size: 36px; font-weight: bold; margin-bottom: 10px; }
-        .stat-label { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
-        .chart-container { 
-            background: white; 
-            padding: 20px; 
-            border-radius: 8px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-            margin-bottom: 20px; 
-        }
-        .chart-title { font-size: 18px; font-weight: bold; margin-bottom: 20px; color: #333; }
-        .chart-bar { 
-            display: flex; 
-            align-items: center; 
-            margin-bottom: 15px; 
-            padding: 10px; 
-            background: #f8f9fa; 
-            border-radius: 4px; 
-        }
-        .chart-label { width: 150px; font-weight: bold; color: #555; }
-        .chart-progress { 
-            flex: 1; 
-            height: 20px; 
-            background: #e9ecef; 
-            border-radius: 10px; 
-            margin: 0 15px; 
-            overflow: hidden; 
-        }
-        .chart-fill { 
-            height: 100%; 
-            background: linear-gradient(90deg, #007bff, #0056b3); 
-            border-radius: 10px; 
-            transition: width 0.8s ease-in-out; 
-            width: 0%;
-        }
-        .chart-value { font-weight: bold; color: #333; }
-        .recent-reports { 
-            background: white; 
-            padding: 20px; 
-            border-radius: 8px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-        }
-        .recent-reports table { width: 100%; border-collapse: collapse; }
-        .recent-reports th, .recent-reports td { 
-            padding: 12px; 
-            text-align: left; 
-            border-bottom: 1px solid #ddd; 
-        }
-        .recent-reports th { background-color: #f8f9fa; font-weight: bold; }
-        .recent-reports tr:hover { background-color: #f5f5f5; cursor: pointer; }
-        .recent-reports tr:active { background-color: #e9ecef; }
-        .clickable-row { transition: background-color 0.2s ease; }
-        .status-badge { 
-            padding: 4px 8px; 
-            border-radius: 12px; 
-            font-size: 11px; 
-            font-weight: bold; 
-            text-transform: uppercase; 
-        }
-        .status-pending { background-color: #fff3cd; color: #856404; }
-        .status-in_progress { background-color: #d1ecf1; color: #0c5460; }
-        .status-resolved { background-color: #d4edda; color: #155724; }
-        .alert { 
-            padding: 12px; 
-            margin-bottom: 20px; 
-            border-radius: 4px; 
-        }
-        .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .alert-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h2>Statistik BAP SIMRS</h2>
-        <div class="nav-links">
-            <a href="{{ url_for('dashboard') }}">← Dashboard</a>
-            <a href="{{ url_for('tambah_laporan') }}">+ Tambah Laporan</a>
-            {% if current_user.is_admin() %}
-                <a href="{{ url_for('users') }}">Kelola User</a>
-            {% endif %}
-        </div>
+{% extends "base.html" %}
+
+{% block title %}Statistik - BAP SIMRS{% endblock %}
+{% block page_title %}📊 Statistik{% endblock %}
+
+{% block extra_css %}
+.stats-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+    gap: 1.5rem; 
+    margin-bottom: 2rem; 
+}
+
+.stat-card { 
+    padding: 2rem;
+    border-radius: var(--radius-xl);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
+}
+
+.stat-card.total { 
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%); 
+    color: white; 
+}
+
+.stat-card.pending { 
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); 
+    color: #92400e; 
+}
+
+.stat-card.in-progress { 
+    background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%); 
+    color: #1e40af; 
+}
+
+.stat-card.resolved { 
+    background: linear-gradient(135deg, #d1fae5 0%, #86efac 100%); 
+    color: #166534; 
+}
+
+.stat-number { 
+    font-size: 3rem; 
+    font-weight: 800; 
+    margin-bottom: 0.5rem;
+    line-height: 1;
+}
+
+.stat-label { 
+    font-size: 0.875rem; 
+    text-transform: uppercase; 
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.chart-container { 
+    background: var(--surface);
+    padding: 2rem;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    margin-bottom: 2rem;
+}
+
+.chart-title { 
+    font-size: 1.25rem; 
+    font-weight: 700; 
+    margin-bottom: 1.5rem; 
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.chart-bar { 
+    display: flex; 
+    align-items: center; 
+    margin-bottom: 1rem; 
+    padding: 1rem; 
+    background: var(--surface-hover); 
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+
+.chart-bar:hover {
+    background: #e2e8f0;
+    transform: translateX(4px);
+}
+
+.chart-label { 
+    width: 180px; 
+    font-weight: 600; 
+    color: var(--text-primary);
+    font-size: 0.875rem;
+}
+
+.chart-progress { 
+    flex: 1; 
+    height: 24px; 
+    background: var(--border); 
+    border-radius: 12px; 
+    margin: 0 1rem; 
+    overflow: hidden; 
+    position: relative;
+}
+
+.chart-fill { 
+    height: 100%; 
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-light)); 
+    border-radius: 12px; 
+    transition: width 0.8s ease-in-out; 
+    width: 0%;
+    position: relative;
+}
+
+.chart-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.chart-value { 
+    font-weight: 700; 
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    min-width: 40px;
+    text-align: right;
+}
+
+.recent-reports { 
+    background: var(--surface);
+    padding: 2rem;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+}
+
+.clickable-row { 
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.clickable-row:hover {
+    background: var(--surface-hover) !important;
+    transform: translateX(4px);
+}
+
+.clickable-row:active {
+    background: #e2e8f0 !important;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--text-muted);
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.empty-state-text {
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+}
+{% endblock %}
+
+{% block content %}
+<!-- Statistics Cards -->
+<div class="stats-grid fade-in">
+    <div class="stat-card total">
+        <div class="stat-number">{{ stats.total_laporan or 0 }}</div>
+        <div class="stat-label">📋 Total Laporan</div>
     </div>
-
-    <!-- Flash Messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ 'error' if category == 'error' else category }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-    <!-- Statistics Cards -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-number">{{ stats.total_laporan or 0 }}</div>
-            <div class="stat-label">Total Laporan</div>
-        </div>
-        <div class="stat-card pending">
-            <div class="stat-number">{{ stats.pending_count or 0 }}</div>
-            <div class="stat-label">Pending</div>
-        </div>
-        <div class="stat-card in-progress">
-            <div class="stat-number">{{ stats.in_progress_count or 0 }}</div>
-            <div class="stat-label">In Progress</div>
-        </div>
-        <div class="stat-card resolved">
-            <div class="stat-number">{{ stats.resolved_count or 0 }}</div>
-            <div class="stat-label">Resolved</div>
-        </div>
+    <div class="stat-card pending">
+        <div class="stat-number">{{ stats.pending_count or 0 }}</div>
+        <div class="stat-label">⏳ Pending</div>
     </div>
+    <div class="stat-card in-progress">
+        <div class="stat-number">{{ stats.in_progress_count or 0 }}</div>
+        <div class="stat-label">🔄 In Progress</div>
+    </div>
+    <div class="stat-card resolved">
+        <div class="stat-number">{{ stats.resolved_count or 0 }}</div>
+        <div class="stat-label">✅ Resolved</div>
+    </div>
+</div>
 
-    <!-- Jenis Kesalahan Chart -->
+<!-- Jenis Kesalahan Chart -->
+<div class="chart-container fade-in">
+    <div class="chart-title">
+        <span>📈</span>
+        Laporan berdasarkan Jenis Kesalahan
+    </div>
     {% if stats.jenis_stats and stats.jenis_stats|length > 0 %}
-    <div class="chart-container">
-        <div class="chart-title">Laporan berdasarkan Jenis Kesalahan</div>
         {% set max_count = stats.jenis_stats|map(attribute='count')|max %}
         {% for jenis, count in stats.jenis_stats %}
         <div class="chart-bar">
@@ -160,121 +231,106 @@
             <div class="chart-value">{{ count or 0 }}</div>
         </div>
         {% endfor %}
-    </div>
     {% else %}
-    <div class="chart-container">
-        <div class="chart-title">Laporan berdasarkan Jenis Kesalahan</div>
-        <p style="text-align: center; color: #666; padding: 20px;">Belum ada data untuk ditampilkan.</p>
-    </div>
-    {% endif %}
-
-    <!-- Recent Reports -->
-    {% if stats.recent_reports and stats.recent_reports|length > 0 %}
-    <div class="recent-reports">
-        <div class="chart-title">Laporan Terbaru</div>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Unit</th>
-                    <th>Pelapor</th>
-                    <th>Jenis</th>
-                    <th>Status</th>
-                    <th>Tanggal</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for laporan in stats.recent_reports %}
-                <tr class="clickable-row" data-href="{{ url_for('detail', id=laporan.id) }}" style="cursor: pointer;">
-                    <td>{{ laporan.id }}</td>
-                    <td>{{ laporan.unit or '-' }}</td>
-                    <td>{{ laporan.pelapor or '-' }}</td>
-                    <td>{{ laporan.jenis_kesalahan or '-' }}</td>
-                    <td>
-                        <span class="status-badge status-{{ laporan.status or 'pending' }}">
-                            {% if laporan.status == 'pending' %}Pending
-                            {% elif laporan.status == 'in_progress' %}In Progress
-                            {% elif laporan.status == 'resolved' %}Resolved
-                            {% else %}{{ laporan.status or 'Pending' }}
-                            {% endif %}
-                        </span>
-                    </td>
-                    <td>{{ format_datetime(laporan.created_at) if laporan.created_at else '-' }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% else %}
-    <div class="content">
-        <div class="chart-title">Laporan Terbaru</div>
-        <p style="text-align: center; color: #666; padding: 40px;">Belum ada laporan yang dibuat.</p>
-        <div style="text-align: center;">
-            <a href="{{ url_for('tambah_laporan') }}" class="nav-links" style="display: inline-block;">Buat Laporan Pertama</a>
+        <div class="empty-state">
+            <div class="empty-state-icon">📊</div>
+            <div class="empty-state-title">Belum Ada Data</div>
+            <div class="empty-state-text">Data statistik akan muncul setelah ada laporan yang dibuat.</div>
         </div>
-    </div>
     {% endif %}
+</div>
 
-    <script>
-        // Handle clickable rows and chart initialization
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize chart bars with animation
-            const chartFills = document.querySelectorAll('.chart-fill');
-            chartFills.forEach(function(fill, index) {
-                const width = fill.getAttribute('data-width');
-                if (width) {
-                    // Add animation delay for visual effect
-                    setTimeout(function() {
-                        fill.style.width = width + '%';
-                    }, index * 100);
-                }
-            });
+<!-- Recent Reports -->
+<div class="recent-reports fade-in">
+    <div class="chart-title">
+        <span>📋</span>
+        10 Laporan Pertama (ID Terkecil)
+    </div>
+    {% if stats.recent_reports and stats.recent_reports|length > 0 %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Unit</th>
+                        <th>Pelapor</th>
+                        <th>Jenis</th>
+                        <th>Status</th>
+                        <th>Tanggal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for laporan in stats.recent_reports %}
+                    <tr class="clickable-row" data-href="{{ url_for('detail', id=laporan.id) }}">
+                        <td><strong>#{{ laporan.id }}</strong></td>
+                        <td>{{ laporan.unit or '-' }}</td>
+                        <td>{{ laporan.pelapor or '-' }}</td>
+                        <td>{{ laporan.jenis_kesalahan or '-' }}</td>
+                        <td>
+                            {% if laporan.status == 'pending' %}
+                                <span class="status-badge status-pending">⏳ Pending</span>
+                            {% elif laporan.status == 'in_progress' %}
+                                <span class="status-badge status-progress">🔄 In Progress</span>
+                            {% elif laporan.status == 'resolved' %}
+                                <span class="status-badge status-completed">✅ Resolved</span>
+                            {% else %}
+                                <span class="status-badge status-pending">{{ laporan.status or 'Pending' }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ format_datetime(laporan.created_at) if laporan.created_at else '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📝</div>
+            <div class="empty-state-title">Belum Ada Laporan</div>
+            <div class="empty-state-text">Mulai dengan membuat laporan pertama Anda.</div>
+            <a href="{{ url_for('tambah_laporan') }}" class="btn btn-primary">
+                <span>➕</span> Buat Laporan Pertama
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+// Handle clickable rows and chart initialization
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize chart bars with animation
+    const chartFills = document.querySelectorAll('.chart-fill');
+    chartFills.forEach(function(fill, index) {
+        const width = fill.getAttribute('data-width');
+        if (width) {
+            // Add animation delay for visual effect
+            setTimeout(function() {
+                fill.style.width = width + '%';
+            }, index * 150 + 500);
+        }
+    });
+    
+    // Handle clickable rows
+    const clickableRows = document.querySelectorAll('.clickable-row');
+    
+    clickableRows.forEach(function(row) {
+        // Click handler
+        row.addEventListener('click', function(e) {
+            // Prevent default if clicking on links or buttons inside the row
+            if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') {
+                return;
+            }
             
-            // Handle clickable rows
-            const clickableRows = document.querySelectorAll('.clickable-row');
-            
-            clickableRows.forEach(function(row) {
-                // Click handler
-                row.addEventListener('click', function(e) {
-                    // Prevent default if clicking on links or buttons inside the row
-                    if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') {
-                        return;
-                    }
-                    
-                    const href = this.getAttribute('data-href');
-                    if (href) {
-                        // Add visual feedback before navigation
-                        this.style.backgroundColor = '#e9ecef';
-                        setTimeout(function() {
-                            window.location.href = href;
-                        }, 100);
-                    }
-                });
-                
-                // Hover effects
-                row.addEventListener('mouseenter', function() {
-                    if (!this.classList.contains('clicking')) {
-                        this.style.backgroundColor = '#f8f9fa';
-                    }
-                });
-                
-                row.addEventListener('mouseleave', function() {
-                    if (!this.classList.contains('clicking')) {
-                        this.style.backgroundColor = '';
-                    }
-                });
-                
-                // Active state
-                row.addEventListener('mousedown', function() {
-                    this.classList.add('clicking');
-                    this.style.backgroundColor = '#e9ecef';
-                });
-                
-                row.addEventListener('mouseup', function() {
-                    this.classList.remove('clicking');
-                });
-            });
+            const href = this.getAttribute('data-href');
+            if (href) {
+                // Add visual feedback before navigation
+                this.style.backgroundColor = '#e2e8f0';
+                setTimeout(function() {
+                    window.location.href = href;
+                }, 100);
+            }
         });
-    </script>
-</body>
-</html>
+    });
+});
+{% endblock %}
