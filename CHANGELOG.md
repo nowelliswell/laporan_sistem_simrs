@@ -5,6 +5,46 @@ All notable changes to BAP SIMRS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-01-07
+
+### Fixed
+- **Template Issues**
+  - Resolved CSS syntax errors in statistik.html causing rendering problems
+  - Fixed JavaScript conflicts in dashboard.html template
+  - Corrected Jinja2 template syntax issues with inline styles
+  - Enhanced error handling for template variables
+
+- **User Interface**
+  - Fixed click functionality for table rows in statistics page
+  - Improved visual feedback for interactive elements
+  - Enhanced responsive design elements
+  - Added proper hover and active states
+
+- **Search & Filtering**
+  - Resolved form field rendering issues in dashboard
+  - Fixed pagination links with search parameters
+  - Enhanced CSV export functionality
+  - Improved saved search features
+
+### Enhanced
+- **Statistics Page**
+  - Added animated chart loading with smooth transitions
+  - Improved chart width calculations using JavaScript
+  - Enhanced visual appeal with better CSS animations
+  - Added comprehensive error handling for empty data states
+
+- **Dashboard Functionality**
+  - Enhanced search form with better field handling
+  - Improved search statistics display
+  - Better integration of search preferences
+  - Enhanced modal functionality for saving searches
+
+- **Code Quality**
+  - Added comprehensive null/undefined checks
+  - Improved JavaScript event handling
+  - Enhanced CSS organization and maintainability
+  - Better separation of concerns in templates
+
 ## [1.0.0] - 2026-01-05
 
 ### Added
