@@ -475,6 +475,4 @@ with app.app_context():
 
 **[⬆ Kembali ke atas](#bap-simrs---sistem-pelaporan-kesalahan-simrs)**
 
-Made with ❤️ by **BAP SIMRS Team**
-
 </div>
