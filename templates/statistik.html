@@ -64,7 +64,8 @@
             height: 100%; 
             background: linear-gradient(90deg, #007bff, #0056b3); 
             border-radius: 10px; 
-            transition: width 0.3s ease; 
+            transition: width 0.8s ease-in-out; 
+            width: 0%;
         }
         .chart-value { font-weight: bold; color: #333; }
         .recent-reports { 
@@ -80,7 +81,9 @@
             border-bottom: 1px solid #ddd; 
         }
         .recent-reports th { background-color: #f8f9fa; font-weight: bold; }
-        .recent-reports tr:hover { background-color: #f5f5f5; }
+        .recent-reports tr:hover { background-color: #f5f5f5; cursor: pointer; }
+        .recent-reports tr:active { background-color: #e9ecef; }
+        .clickable-row { transition: background-color 0.2s ease; }
         .status-badge { 
             padding: 4px 8px; 
             border-radius: 12px; 
@@ -126,42 +129,47 @@
     <!-- Statistics Cards -->
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-number">{{ stats.total_laporan }}</div>
+            <div class="stat-number">{{ stats.total_laporan or 0 }}</div>
             <div class="stat-label">Total Laporan</div>
         </div>
         <div class="stat-card pending">
-            <div class="stat-number">{{ stats.pending_count }}</div>
+            <div class="stat-number">{{ stats.pending_count or 0 }}</div>
             <div class="stat-label">Pending</div>
         </div>
         <div class="stat-card in-progress">
-            <div class="stat-number">{{ stats.in_progress_count }}</div>
+            <div class="stat-number">{{ stats.in_progress_count or 0 }}</div>
             <div class="stat-label">In Progress</div>
         </div>
         <div class="stat-card resolved">
-            <div class="stat-number">{{ stats.resolved_count }}</div>
+            <div class="stat-number">{{ stats.resolved_count or 0 }}</div>
             <div class="stat-label">Resolved</div>
         </div>
     </div>
 
     <!-- Jenis Kesalahan Chart -->
-    {% if stats.jenis_stats %}
+    {% if stats.jenis_stats and stats.jenis_stats|length > 0 %}
     <div class="chart-container">
         <div class="chart-title">Laporan berdasarkan Jenis Kesalahan</div>
         {% set max_count = stats.jenis_stats|map(attribute='count')|max %}
         {% for jenis, count in stats.jenis_stats %}
         <div class="chart-bar">
-            <div class="chart-label">{{ jenis }}</div>
+            <div class="chart-label">{{ jenis or 'Tidak Diketahui' }}</div>
             <div class="chart-progress">
-                <div class="chart-fill" style="width: {{ (count / max_count * 100) if max_count > 0 else 0 }}%"></div>
+                <div class="chart-fill" data-width="{{ (count / max_count * 100) if max_count > 0 else 0 }}"></div>
             </div>
-            <div class="chart-value">{{ count }}</div>
+            <div class="chart-value">{{ count or 0 }}</div>
         </div>
         {% endfor %}
+    </div>
+    {% else %}
+    <div class="chart-container">
+        <div class="chart-title">Laporan berdasarkan Jenis Kesalahan</div>
+        <p style="text-align: center; color: #666; padding: 20px;">Belum ada data untuk ditampilkan.</p>
     </div>
     {% endif %}
 
     <!-- Recent Reports -->
-    {% if stats.recent_reports %}
+    {% if stats.recent_reports and stats.recent_reports|length > 0 %}
     <div class="recent-reports">
         <div class="chart-title">Laporan Terbaru</div>
         <table>
@@ -177,21 +185,21 @@
             </thead>
             <tbody>
                 {% for laporan in stats.recent_reports %}
-                <tr onclick="window.location.href='{{ url_for('detail', id=laporan.id) }}';" style="cursor: pointer;"></tr>
+                <tr class="clickable-row" data-href="{{ url_for('detail', id=laporan.id) }}" style="cursor: pointer;">
                     <td>{{ laporan.id }}</td>
-                    <td>{{ laporan.unit }}</td>
-                    <td>{{ laporan.pelapor }}</td>
-                    <td>{{ laporan.jenis_kesalahan }}</td>
+                    <td>{{ laporan.unit or '-' }}</td>
+                    <td>{{ laporan.pelapor or '-' }}</td>
+                    <td>{{ laporan.jenis_kesalahan or '-' }}</td>
                     <td>
-                        <span class="status-badge status-{{ laporan.status }}">
+                        <span class="status-badge status-{{ laporan.status or 'pending' }}">
                             {% if laporan.status == 'pending' %}Pending
                             {% elif laporan.status == 'in_progress' %}In Progress
                             {% elif laporan.status == 'resolved' %}Resolved
-                            {% else %}{{ laporan.status }}
+                            {% else %}{{ laporan.status or 'Pending' }}
                             {% endif %}
                         </span>
                     </td>
-                    <td>{{ format_datetime(laporan.created_at) }}</td>
+                    <td>{{ format_datetime(laporan.created_at) if laporan.created_at else '-' }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -199,8 +207,74 @@
     </div>
     {% else %}
     <div class="content">
-        <p style="text-align: center; color: #666;">Belum ada laporan yang dibuat.</p>
+        <div class="chart-title">Laporan Terbaru</div>
+        <p style="text-align: center; color: #666; padding: 40px;">Belum ada laporan yang dibuat.</p>
+        <div style="text-align: center;">
+            <a href="{{ url_for('tambah_laporan') }}" class="nav-links" style="display: inline-block;">Buat Laporan Pertama</a>
+        </div>
     </div>
     {% endif %}
+
+    <script>
+        // Handle clickable rows and chart initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize chart bars with animation
+            const chartFills = document.querySelectorAll('.chart-fill');
+            chartFills.forEach(function(fill, index) {
+                const width = fill.getAttribute('data-width');
+                if (width) {
+                    // Add animation delay for visual effect
+                    setTimeout(function() {
+                        fill.style.width = width + '%';
+                    }, index * 100);
+                }
+            });
+            
+            // Handle clickable rows
+            const clickableRows = document.querySelectorAll('.clickable-row');
+            
+            clickableRows.forEach(function(row) {
+                // Click handler
+                row.addEventListener('click', function(e) {
+                    // Prevent default if clicking on links or buttons inside the row
+                    if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') {
+                        return;
+                    }
+                    
+                    const href = this.getAttribute('data-href');
+                    if (href) {
+                        // Add visual feedback before navigation
+                        this.style.backgroundColor = '#e9ecef';
+                        setTimeout(function() {
+                            window.location.href = href;
+                        }, 100);
+                    }
+                });
+                
+                // Hover effects
+                row.addEventListener('mouseenter', function() {
+                    if (!this.classList.contains('clicking')) {
+                        this.style.backgroundColor = '#f8f9fa';
+                    }
+                });
+                
+                row.addEventListener('mouseleave', function() {
+                    if (!this.classList.contains('clicking')) {
+                        this.style.backgroundColor = '';
+                    }
+                });
+                
+                // Active state
+                row.addEventListener('mousedown', function() {
+                    this.classList.add('clicking');
+                    this.style.backgroundColor = '#e9ecef';
+                });
+                
+                row.addEventListener('mouseup', function() {
+                    this.classList.remove('clicking');
+                });
+            });
+        });
+    </script>
 </body>
 </html>

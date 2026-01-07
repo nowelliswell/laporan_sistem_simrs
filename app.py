@@ -8,9 +8,9 @@ from logging.handlers import RotatingFileHandler
 
 # Import local modules
 from config import Config
-from models import db, User, Laporan
-from forms import LoginForm, LaporanForm, UserForm, EditStatusForm
-from utils import save_upload_file, delete_upload_file, sanitize_input, format_datetime
+from models import db, User, Laporan, SearchPreference
+from forms import LoginForm, LaporanForm, UserForm, EditStatusForm, SearchForm, SaveSearchForm
+from utils import save_upload_file, delete_upload_file, sanitize_input, format_datetime, build_search_query, export_search_results, get_search_statistics
 
 def create_app():
     app = Flask(__name__)
@@ -117,18 +117,74 @@ def logout():
 @login_required
 def dashboard():
     try:
+        # Get search parameters
+        search_form = SearchForm()
+        
+        # Populate unit choices dynamically
+        from sqlalchemy import distinct
+        units = db.session.query(distinct(Laporan.unit)).filter(Laporan.unit.isnot(None)).all()
+        search_form.unit_filter.choices = [('', 'Semua Unit')] + [(unit[0], unit[0]) for unit in units]
+        
+        # Build query based on search criteria
+        if request.args:
+            # Populate form with URL parameters
+            search_form.search_query.data = request.args.get('search_query', '')
+            search_form.unit_filter.data = request.args.get('unit_filter', '')
+            search_form.status_filter.data = request.args.get('status_filter', '')
+            search_form.jenis_filter.data = request.args.get('jenis_filter', '')
+            search_form.pelapor_filter.data = request.args.get('pelapor_filter', '')
+            search_form.sort_by.data = request.args.get('sort_by', 'created_at')
+            search_form.sort_order.data = request.args.get('sort_order', 'desc')
+            
+            # Handle date filters
+            if request.args.get('date_from'):
+                try:
+                    from datetime import datetime
+                    search_form.date_from.data = datetime.strptime(request.args.get('date_from'), '%Y-%m-%d').date()
+                except:
+                    pass
+            
+            if request.args.get('date_to'):
+                try:
+                    from datetime import datetime
+                    search_form.date_to.data = datetime.strptime(request.args.get('date_to'), '%Y-%m-%d').date()
+                except:
+                    pass
+            
+            # Build filtered query
+            query = build_search_query(request.args)
+        else:
+            # Default query
+            query = Laporan.query.order_by(Laporan.created_at.desc())
+        
+        # Pagination
         page = request.args.get('page', 1, type=int)
         per_page = 10
         
-        laporan = Laporan.query.order_by(Laporan.created_at.desc()).paginate(
+        laporan = query.paginate(
             page=page, per_page=per_page, error_out=False
         )
         
-        return render_template("dashboard.html", laporan=laporan, format_datetime=format_datetime)
+        # Get search statistics
+        search_stats = get_search_statistics(query)
+        
+        # Get user's saved searches
+        saved_searches = []
+        if current_user.is_authenticated:
+            saved_searches = SearchPreference.query.filter_by(user_id=current_user.id).all()
+        
+        return render_template("dashboard.html", 
+                             laporan=laporan, 
+                             format_datetime=format_datetime,
+                             search_form=search_form,
+                             search_stats=search_stats,
+                             saved_searches=saved_searches)
     except Exception as e:
         app.logger.error(f'Dashboard error: {str(e)}')
         flash('Terjadi kesalahan saat memuat dashboard', 'error')
-        return render_template("dashboard.html", laporan=None)
+        # Create empty search form for error case
+        search_form = SearchForm()
+        return render_template("dashboard.html", laporan=None, search_form=search_form)
 
 # ======================
 # LAPORAN ROUTES
@@ -253,6 +309,195 @@ def delete_laporan(id):
         app.logger.error(f'Error deleting report: {str(e)}')
         flash('Terjadi kesalahan saat menghapus laporan', 'error')
         return redirect(url_for('detail', id=id))
+
+# ======================
+# SEARCH & EXPORT ROUTES
+# ======================
+@app.route("/search", methods=["GET", "POST"])
+@login_required
+def search():
+    form = SearchForm()
+    
+    # Populate unit choices dynamically
+    from sqlalchemy import distinct
+    units = db.session.query(distinct(Laporan.unit)).filter(Laporan.unit.isnot(None)).all()
+    form.unit_filter.choices = [('', 'Semua Unit')] + [(unit[0], unit[0]) for unit in units]
+    
+    if form.validate_on_submit():
+        # Build query parameters
+        params = {}
+        if form.search_query.data:
+            params['search_query'] = form.search_query.data
+        if form.unit_filter.data:
+            params['unit_filter'] = form.unit_filter.data
+        if form.status_filter.data:
+            params['status_filter'] = form.status_filter.data
+        if form.jenis_filter.data:
+            params['jenis_filter'] = form.jenis_filter.data
+        if form.pelapor_filter.data:
+            params['pelapor_filter'] = form.pelapor_filter.data
+        if form.date_from.data:
+            params['date_from'] = form.date_from.data.strftime('%Y-%m-%d')
+        if form.date_to.data:
+            params['date_to'] = form.date_to.data.strftime('%Y-%m-%d')
+        if form.sort_by.data:
+            params['sort_by'] = form.sort_by.data
+        if form.sort_order.data:
+            params['sort_order'] = form.sort_order.data
+        
+        # Redirect to dashboard with search parameters
+        return redirect(url_for('dashboard', **params))
+    
+    return render_template("search.html", form=form)
+
+@app.route("/export")
+@login_required
+def export_results():
+    try:
+        # Build query based on current search parameters
+        query = build_search_query(request.args)
+        laporan_list = query.all()
+        
+        # Export format
+        export_format = request.args.get('format', 'csv')
+        
+        if export_format == 'csv':
+            csv_data = export_search_results(laporan_list, 'csv')
+            
+            from flask import Response
+            from datetime import datetime
+            
+            filename = f"laporan_simrs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+            
+            return Response(
+                csv_data,
+                mimetype='text/csv',
+                headers={'Content-Disposition': f'attachment; filename={filename}'}
+            )
+        
+        flash('Format export tidak didukung', 'error')
+        return redirect(url_for('dashboard'))
+        
+    except Exception as e:
+        app.logger.error(f'Export error: {str(e)}')
+        flash('Terjadi kesalahan saat export data', 'error')
+        return redirect(url_for('dashboard'))
+
+@app.route("/save_search", methods=["POST"])
+@login_required
+def save_search():
+    form = SaveSearchForm()
+    
+    if form.validate_on_submit():
+        try:
+            # Check if search name already exists for this user
+            existing = SearchPreference.query.filter_by(
+                user_id=current_user.id,
+                name=form.name.data
+            ).first()
+            
+            if existing:
+                flash('Nama pencarian sudah ada', 'error')
+                return redirect(url_for('dashboard'))
+            
+            # Create new search preference
+            search_pref = SearchPreference(
+                user_id=current_user.id,
+                name=form.name.data,
+                search_query=request.form.get('search_query'),
+                unit_filter=request.form.get('unit_filter'),
+                status_filter=request.form.get('status_filter'),
+                jenis_filter=request.form.get('jenis_filter'),
+                pelapor_filter=request.form.get('pelapor_filter'),
+                sort_by=request.form.get('sort_by', 'created_at'),
+                sort_order=request.form.get('sort_order', 'desc')
+            )
+            
+            # Handle date filters
+            if request.form.get('date_from'):
+                try:
+                    from datetime import datetime
+                    search_pref.date_from = datetime.strptime(request.form.get('date_from'), '%Y-%m-%d').date()
+                except:
+                    pass
+            
+            if request.form.get('date_to'):
+                try:
+                    from datetime import datetime
+                    search_pref.date_to = datetime.strptime(request.form.get('date_to'), '%Y-%m-%d').date()
+                except:
+                    pass
+            
+            db.session.add(search_pref)
+            db.session.commit()
+            
+            flash(f'Pencarian "{form.name.data}" berhasil disimpan', 'success')
+            
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f'Save search error: {str(e)}')
+            flash('Terjadi kesalahan saat menyimpan pencarian', 'error')
+    
+    return redirect(url_for('dashboard'))
+
+@app.route("/load_search/<int:search_id>")
+@login_required
+def load_search(search_id):
+    try:
+        search_pref = SearchPreference.query.filter_by(
+            id=search_id,
+            user_id=current_user.id
+        ).first_or_404()
+        
+        # Build parameters from saved search
+        params = {}
+        if search_pref.search_query:
+            params['search_query'] = search_pref.search_query
+        if search_pref.unit_filter:
+            params['unit_filter'] = search_pref.unit_filter
+        if search_pref.status_filter:
+            params['status_filter'] = search_pref.status_filter
+        if search_pref.jenis_filter:
+            params['jenis_filter'] = search_pref.jenis_filter
+        if search_pref.pelapor_filter:
+            params['pelapor_filter'] = search_pref.pelapor_filter
+        if search_pref.date_from:
+            params['date_from'] = search_pref.date_from.strftime('%Y-%m-%d')
+        if search_pref.date_to:
+            params['date_to'] = search_pref.date_to.strftime('%Y-%m-%d')
+        if search_pref.sort_by:
+            params['sort_by'] = search_pref.sort_by
+        if search_pref.sort_order:
+            params['sort_order'] = search_pref.sort_order
+        
+        return redirect(url_for('dashboard', **params))
+        
+    except Exception as e:
+        app.logger.error(f'Load search error: {str(e)}')
+        flash('Pencarian tidak ditemukan', 'error')
+        return redirect(url_for('dashboard'))
+
+@app.route("/delete_search/<int:search_id>", methods=["POST"])
+@login_required
+def delete_search(search_id):
+    try:
+        search_pref = SearchPreference.query.filter_by(
+            id=search_id,
+            user_id=current_user.id
+        ).first_or_404()
+        
+        search_name = search_pref.name
+        db.session.delete(search_pref)
+        db.session.commit()
+        
+        flash(f'Pencarian "{search_name}" berhasil dihapus', 'success')
+        
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f'Delete search error: {str(e)}')
+        flash('Terjadi kesalahan saat menghapus pencarian', 'error')
+    
+    return redirect(url_for('dashboard'))
 
 # ======================
 # USER MANAGEMENT (Admin Only)

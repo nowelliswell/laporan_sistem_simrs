@@ -78,3 +78,120 @@ def get_file_size(file_path):
         return os.path.getsize(file_path)
     except:
         return 0
+
+def build_search_query(form_data):
+    """Build SQLAlchemy query berdasarkan search criteria"""
+    from models import Laporan, User
+    from sqlalchemy import and_, or_, desc, asc
+    
+    query = Laporan.query
+    
+    # Text search - search in multiple fields
+    if form_data.get('search_query'):
+        search_term = f"%{form_data['search_query']}%"
+        query = query.filter(
+            or_(
+                Laporan.unit.ilike(search_term),
+                Laporan.pelapor.ilike(search_term),
+                Laporan.modul_simrs.ilike(search_term),
+                Laporan.deskripsi.ilike(search_term)
+            )
+        )
+    
+    # Unit filter
+    if form_data.get('unit_filter'):
+        query = query.filter(Laporan.unit == form_data['unit_filter'])
+    
+    # Status filter
+    if form_data.get('status_filter'):
+        query = query.filter(Laporan.status == form_data['status_filter'])
+    
+    # Jenis kesalahan filter
+    if form_data.get('jenis_filter'):
+        query = query.filter(Laporan.jenis_kesalahan == form_data['jenis_filter'])
+    
+    # Pelapor filter
+    if form_data.get('pelapor_filter'):
+        pelapor_term = f"%{form_data['pelapor_filter']}%"
+        query = query.filter(Laporan.pelapor.ilike(pelapor_term))
+    
+    # Date range filter
+    if form_data.get('date_from'):
+        query = query.filter(Laporan.tgl_kejadian >= form_data['date_from'])
+    
+    if form_data.get('date_to'):
+        # Add one day to include the end date
+        from datetime import datetime, timedelta
+        end_date = form_data['date_to'] + timedelta(days=1)
+        query = query.filter(Laporan.tgl_kejadian < end_date)
+    
+    # Sorting
+    sort_by = form_data.get('sort_by', 'created_at')
+    sort_order = form_data.get('sort_order', 'desc')
+    
+    if hasattr(Laporan, sort_by):
+        sort_column = getattr(Laporan, sort_by)
+        if sort_order == 'asc':
+            query = query.order_by(asc(sort_column))
+        else:
+            query = query.order_by(desc(sort_column))
+    
+    return query
+
+def export_search_results(laporan_list, format='csv'):
+    """Export search results to CSV or Excel"""
+    import csv
+    import io
+    from datetime import datetime
+    
+    if format == 'csv':
+        output = io.StringIO()
+        writer = csv.writer(output)
+        
+        # Header
+        writer.writerow([
+            'ID', 'Unit', 'Pelapor', 'Modul SIMRS', 'Jenis Kesalahan',
+            'Deskripsi', 'Tanggal Kejadian', 'Status', 'Tanggal Dibuat',
+            'Dibuat Oleh', 'Ditugaskan Ke'
+        ])
+        
+        # Data rows
+        for laporan in laporan_list:
+            writer.writerow([
+                laporan.id,
+                laporan.unit,
+                laporan.pelapor,
+                laporan.modul_simrs or '',
+                laporan.jenis_kesalahan,
+                laporan.deskripsi,
+                laporan.tgl_kejadian.strftime('%Y-%m-%d %H:%M') if laporan.tgl_kejadian else '',
+                laporan.status,
+                laporan.created_at.strftime('%Y-%m-%d %H:%M') if laporan.created_at else '',
+                laporan.creator.username if laporan.creator else '',
+                laporan.assignee.username if laporan.assignee else ''
+            ])
+        
+        output.seek(0)
+        return output.getvalue()
+    
+    return None
+
+def get_search_statistics(query):
+    """Get statistics for current search results"""
+    total = query.count()
+    
+    # Status breakdown
+    status_stats = {}
+    for status in ['pending', 'in_progress', 'resolved']:
+        status_stats[status] = query.filter_by(status=status).count()
+    
+    # Jenis kesalahan breakdown
+    jenis_stats = {}
+    for jenis in ['Data Pasien', 'Transaksi', 'Sistem Error', 'Lainnya']:
+        jenis_stats[jenis] = query.filter_by(jenis_kesalahan=jenis).count()
+    
+    return {
+        'total': total,
+        'status_stats': status_stats,
+        'jenis_stats': jenis_stats
+    }

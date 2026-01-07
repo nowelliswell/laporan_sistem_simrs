@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed, FileSize
 from wtforms import StringField, TextAreaField, SelectField, DateTimeLocalField, PasswordField
+from wtforms.fields import DateField
 from wtforms.validators import DataRequired, Length, Email, Optional
 from config import Config
 
@@ -93,3 +94,64 @@ class EditStatusForm(FlaskForm):
         # Populate assigned_to choices with users
         from models import User
         self.assigned_to.choices = [(0, 'Tidak ada')] + [(u.id, u.username) for u in User.query.all()]
+
+class SearchForm(FlaskForm):
+    search_query = StringField('Pencarian', validators=[
+        Optional(),
+        Length(max=200, message='Pencarian maksimal 200 karakter')
+    ])
+    unit_filter = SelectField('Unit', 
+        choices=[('', 'Semua Unit')],
+        validators=[Optional()]
+    )
+    status_filter = SelectField('Status', 
+        choices=[
+            ('', 'Semua Status'),
+            ('pending', 'Pending'),
+            ('in_progress', 'In Progress'),
+            ('resolved', 'Resolved')
+        ],
+        validators=[Optional()]
+    )
+    jenis_filter = SelectField('Jenis Kesalahan', 
+        choices=[
+            ('', 'Semua Jenis'),
+            ('Data Pasien', 'Data Pasien'),
+            ('Transaksi', 'Transaksi'),
+            ('Sistem Error', 'Sistem Error'),
+            ('Lainnya', 'Lainnya')
+        ],
+        validators=[Optional()]
+    )
+    pelapor_filter = StringField('Pelapor', validators=[
+        Optional(),
+        Length(max=100, message='Nama pelapor maksimal 100 karakter')
+    ])
+    date_from = DateField('Dari Tanggal', validators=[Optional()])
+    date_to = DateField('Sampai Tanggal', validators=[Optional()])
+    sort_by = SelectField('Urutkan berdasarkan', 
+        choices=[
+            ('created_at', 'Tanggal Dibuat'),
+            ('tgl_kejadian', 'Tanggal Kejadian'),
+            ('unit', 'Unit'),
+            ('pelapor', 'Pelapor'),
+            ('status', 'Status'),
+            ('jenis_kesalahan', 'Jenis Kesalahan')
+        ],
+        default='created_at',
+        validators=[Optional()]
+    )
+    sort_order = SelectField('Urutan', 
+        choices=[
+            ('desc', 'Terbaru ke Terlama'),
+            ('asc', 'Terlama ke Terbaru')
+        ],
+        default='desc',
+        validators=[Optional()]
+    )
+
+class SaveSearchForm(FlaskForm):
+    name = StringField('Nama Pencarian', validators=[
+        DataRequired(message='Nama pencarian wajib diisi'),
+        Length(min=3, max=100, message='Nama pencarian harus 3-100 karakter')
+    ])

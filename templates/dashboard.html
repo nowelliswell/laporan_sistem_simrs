@@ -16,7 +16,113 @@
             border-radius: 4px; 
         }
         .nav-links a:hover { background-color: #007bff; color: white; }
-        .content { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .content { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        
+        /* Search Panel Styles */
+        .search-panel { 
+            background: #f8f9fa; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            border: 1px solid #dee2e6;
+        }
+        .search-panel h4 { 
+            margin: 0 0 15px 0; 
+            color: #495057; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+        }
+        .search-toggle { 
+            background: none; 
+            border: none; 
+            color: #007bff; 
+            cursor: pointer; 
+            font-size: 14px;
+        }
+        .search-form { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 15px; 
+            margin-bottom: 15px;
+        }
+        .search-form .form-group { margin-bottom: 0; }
+        .search-actions { 
+            display: flex; 
+            gap: 10px; 
+            flex-wrap: wrap; 
+            align-items: center;
+        }
+        .search-stats { 
+            background: #e9ecef; 
+            padding: 10px 15px; 
+            border-radius: 4px; 
+            margin-bottom: 15px; 
+            font-size: 14px;
+        }
+        .saved-searches { 
+            margin-top: 15px; 
+            padding-top: 15px; 
+            border-top: 1px solid #dee2e6;
+        }
+        .saved-search-item { 
+            display: inline-block; 
+            margin: 5px 10px 5px 0; 
+            padding: 5px 10px; 
+            background: #007bff; 
+            color: white; 
+            border-radius: 15px; 
+            font-size: 12px; 
+            text-decoration: none;
+        }
+        .saved-search-item:hover { background: #0056b3; color: white; }
+        .delete-search { 
+            background: #dc3545; 
+            color: white; 
+            border: none; 
+            border-radius: 50%; 
+            width: 20px; 
+            height: 20px; 
+            font-size: 10px; 
+            cursor: pointer; 
+            margin-left: 5px;
+        }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: bold; 
+            color: #555; 
+        }
+        .form-control { 
+            width: 100%; 
+            padding: 8px 12px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+            font-size: 14px; 
+            box-sizing: border-box; 
+        }
+        .form-control:focus { 
+            outline: none; 
+            border-color: #007bff; 
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25); 
+        }
+        .btn { 
+            padding: 8px 16px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            text-decoration: none; 
+            display: inline-block; 
+            font-size: 14px;
+        }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-outline-primary { background: white; color: #007bff; border: 1px solid #007bff; }
+        .btn:hover { opacity: 0.8; }
+        
         .alert { 
             padding: 12px; 
             margin-bottom: 20px; 
@@ -25,6 +131,7 @@
         .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .alert-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
         .alert-info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
         th { background-color: #f8f9fa; font-weight: bold; }
@@ -43,6 +150,34 @@
         .status-resolved { color: #28a745; font-weight: bold; }
         .no-data { text-align: center; color: #666; padding: 40px; }
         .user-info { float: right; color: #666; }
+        
+        /* Modal Styles */
+        .modal { 
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content { 
+            background-color: white; 
+            margin: 15% auto; 
+            padding: 20px; 
+            border-radius: 8px; 
+            width: 400px; 
+            max-width: 90%;
+        }
+        .close { 
+            color: #aaa; 
+            float: right; 
+            font-size: 28px; 
+            font-weight: bold; 
+            cursor: pointer;
+        }
+        .close:hover { color: black; }
     </style>
 </head>
 <body>
@@ -54,25 +189,190 @@
             <a href="{{ url_for('tambah_laporan') }}">+ Tambah Laporan</a>
             <a href="{{ url_for('statistik') }}">Statistik</a>
             {% if current_user.is_admin() %}
-            <a href="{{ url_for('users') }}">Kelola User</a>
+                <a href="{{ url_for('users') }}">Kelola User</a>
             {% endif %}
             <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'error' if category == 'error' else category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Search Panel -->
+    <div class="search-panel">
+        <h4>
+            🔍 Pencarian & Filter
+            <button type="button" class="search-toggle" onclick="toggleSearchForm()">
+                <span id="toggle-text">Tampilkan</span>
+            </button>
+        </h4>
+        
+        <!-- Search Statistics -->
+        {% if search_stats %}
+        <div class="search-stats">
+            📊 Hasil: <strong>{{ search_stats.total }}</strong> laporan
+            | Pending: <strong>{{ search_stats.status_stats.pending }}</strong>
+            | In Progress: <strong>{{ search_stats.status_stats.in_progress }}</strong>
+            | Resolved: <strong>{{ search_stats.status_stats.resolved }}</strong>
+        </div>
+        {% endif %}
+        
+        <!-- Search Form -->
+        <div id="search-form" style="display: none;">
+            <form method="get" action="{{ url_for('dashboard') }}">
+                <div class="search-form">
+                    <div class="form-group">
+                        {% if search_form.search_query %}
+                            {{ search_form.search_query.label(class="form-label") }}
+                            {{ search_form.search_query(class="form-control", placeholder="Cari dalam unit, pelapor, deskripsi...") }}
+                        {% else %}
+                            <label class="form-label">Pencarian</label>
+                            <input type="text" name="search_query" class="form-control" placeholder="Cari dalam unit, pelapor, deskripsi..." value="{{ request.args.get('search_query', '') }}">
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        {% if search_form.unit_filter %}
+                            {{ search_form.unit_filter.label(class="form-label") }}
+                            {{ search_form.unit_filter(class="form-control") }}
+                        {% else %}
+                            <label class="form-label">Unit</label>
+                            <select name="unit_filter" class="form-control">
+                                <option value="">Semua Unit</option>
+                            </select>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        {% if search_form.status_filter %}
+                            {{ search_form.status_filter.label(class="form-label") }}
+                            {{ search_form.status_filter(class="form-control") }}
+                        {% else %}
+                            <label class="form-label">Status</label>
+                            <select name="status_filter" class="form-control">
+                                <option value="">Semua Status</option>
+                                <option value="pending" {% if request.args.get('status_filter') == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="in_progress" {% if request.args.get('status_filter') == 'in_progress' %}selected{% endif %}>In Progress</option>
+                                <option value="resolved" {% if request.args.get('status_filter') == 'resolved' %}selected{% endif %}>Resolved</option>
+                            </select>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        {% if search_form.jenis_filter %}
+                            {{ search_form.jenis_filter.label(class="form-label") }}
+                            {{ search_form.jenis_filter(class="form-control") }}
+                        {% else %}
+                            <label class="form-label">Jenis Kesalahan</label>
+                            <select name="jenis_filter" class="form-control">
+                                <option value="">Semua Jenis</option>
+                                <option value="Data Pasien" {% if request.args.get('jenis_filter') == 'Data Pasien' %}selected{% endif %}>Data Pasien</option>
+                                <option value="Transaksi" {% if request.args.get('jenis_filter') == 'Transaksi' %}selected{% endif %}>Transaksi</option>
+                                <option value="Sistem Error" {% if request.args.get('jenis_filter') == 'Sistem Error' %}selected{% endif %}>Sistem Error</option>
+                                <option value="Lainnya" {% if request.args.get('jenis_filter') == 'Lainnya' %}selected{% endif %}>Lainnya</option>
+                            </select>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        {% if search_form.pelapor_filter %}
+                            {{ search_form.pelapor_filter.label(class="form-label") }}
+                            {{ search_form.pelapor_filter(class="form-control", placeholder="Nama pelapor...") }}
+                        {% else %}
+                            <label class="form-label">Pelapor</label>
+                            <input type="text" name="pelapor_filter" class="form-control" placeholder="Nama pelapor..." value="{{ request.args.get('pelapor_filter', '') }}">
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        {% if search_form.date_from %}
+                            {{ search_form.date_from.label(class="form-label") }}
+                            {{ search_form.date_from(class="form-control") }}
+                        {% else %}
+                            <label class="form-label">Dari Tanggal</label>
+                            <input type="date" name="date_from" class="form-control" value="{{ request.args.get('date_from', '') }}">
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        {% if search_form.date_to %}
+                            {{ search_form.date_to.label(class="form-label") }}
+                            {{ search_form.date_to(class="form-control") }}
+                        {% else %}
+                            <label class="form-label">Sampai Tanggal</label>
+                            <input type="date" name="date_to" class="form-control" value="{{ request.args.get('date_to', '') }}">
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        {% if search_form.sort_by %}
+                            {{ search_form.sort_by.label(class="form-label") }}
+                            {{ search_form.sort_by(class="form-control") }}
+                        {% else %}
+                            <label class="form-label">Urutkan berdasarkan</label>
+                            <select name="sort_by" class="form-control">
+                                <option value="created_at" {% if request.args.get('sort_by', 'created_at') == 'created_at' %}selected{% endif %}>Tanggal Dibuat</option>
+                                <option value="tgl_kejadian" {% if request.args.get('sort_by') == 'tgl_kejadian' %}selected{% endif %}>Tanggal Kejadian</option>
+                                <option value="unit" {% if request.args.get('sort_by') == 'unit' %}selected{% endif %}>Unit</option>
+                                <option value="pelapor" {% if request.args.get('sort_by') == 'pelapor' %}selected{% endif %}>Pelapor</option>
+                                <option value="status" {% if request.args.get('sort_by') == 'status' %}selected{% endif %}>Status</option>
+                                <option value="jenis_kesalahan" {% if request.args.get('sort_by') == 'jenis_kesalahan' %}selected{% endif %}>Jenis Kesalahan</option>
+                            </select>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        {% if search_form.sort_order %}
+                            {{ search_form.sort_order.label(class="form-label") }}
+                            {{ search_form.sort_order(class="form-control") }}
+                        {% else %}
+                            <label class="form-label">Urutan</label>
+                            <select name="sort_order" class="form-control">
+                                <option value="desc" {% if request.args.get('sort_order', 'desc') == 'desc' %}selected{% endif %}>Terbaru ke Terlama</option>
+                                <option value="asc" {% if request.args.get('sort_order') == 'asc' %}selected{% endif %}>Terlama ke Terbaru</option>
+                            </select>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="search-actions">
+                    <button type="submit" class="btn btn-primary">🔍 Cari</button>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">🔄 Reset</a>
+                    {% if request.args and request.args|length > 0 %}
+                        <a href="{{ url_for('export_results') }}?{{ request.query_string.decode() }}" class="btn btn-success">📥 Export CSV</a>
+                        <button type="button" class="btn btn-outline-primary" onclick="showSaveModal()">💾 Simpan Pencarian</button>
+                    {% endif %}
+                </div>
+            </form>
             
+            <!-- Saved Searches -->
+            {% if saved_searches %}
+            <div class="saved-searches">
+                <strong>Pencarian Tersimpan:</strong><br>
+                {% for search in saved_searches %}
+                    <span class="saved-search-item">
+                        <a href="{{ url_for('load_search', search_id=search.id) }}" style="color: white; text-decoration: none;">
+                            {{ search.name }}
+                        </a>
+                        <form method="post" action="{{ url_for('delete_search', search_id=search.id) }}" style="display: inline;">
+                            <button type="submit" class="delete-search" onclick="return confirm('Hapus pencarian ini?')" title="Hapus">×</button>
+                        </form>
+                    </span>
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
     </div>
 
     <div class="content">
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ 'error' if category == 'error' else category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
         <h3>Daftar Laporan Kesalahan SIMRS</h3>
 
         {% if laporan and laporan.items %}
@@ -117,13 +417,13 @@
             {% if laporan.pages > 1 %}
                 <div style="margin-top: 20px; text-align: center;">
                     {% if laporan.has_prev %}
-                        <a href="{{ url_for('dashboard', page=laporan.prev_num) }}">&laquo; Sebelumnya</a>
+                        <a href="{{ url_for('dashboard', page=laporan.prev_num) }}{% if request.query_string %}?{{ request.query_string.decode() }}{% endif %}">&laquo; Sebelumnya</a>
                     {% endif %}
                     
                     {% for page_num in laporan.iter_pages() %}
                         {% if page_num %}
                             {% if page_num != laporan.page %}
-                                <a href="{{ url_for('dashboard', page=page_num) }}" style="margin: 0 5px;">{{ page_num }}</a>
+                                <a href="{{ url_for('dashboard', page=page_num) }}{% if request.query_string %}?{{ request.query_string.decode() }}{% endif %}" style="margin: 0 5px;">{{ page_num }}</a>
                             {% else %}
                                 <strong style="margin: 0 5px;">{{ page_num }}</strong>
                             {% endif %}
@@ -131,16 +431,80 @@
                     {% endfor %}
                     
                     {% if laporan.has_next %}
-                        <a href="{{ url_for('dashboard', page=laporan.next_num) }}">Selanjutnya &raquo;</a>
+                        <a href="{{ url_for('dashboard', page=laporan.next_num) }}{% if request.query_string %}?{{ request.query_string.decode() }}{% endif %}">Selanjutnya &raquo;</a>
                     {% endif %}
                 </div>
             {% endif %}
         {% else %}
             <div class="no-data">
-                <p>Belum ada laporan yang dibuat.</p>
-                <a href="{{ url_for('tambah_laporan') }}">Buat laporan pertama</a>
+                <p>Tidak ada laporan yang ditemukan.</p>
+                <a href="{{ url_for('tambah_laporan') }}">Buat laporan baru</a>
             </div>
         {% endif %}
     </div>
+
+    <!-- Save Search Modal -->
+    <div id="saveModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeSaveModal()">&times;</span>
+            <h3>Simpan Pencarian</h3>
+            <form method="post" action="{{ url_for('save_search') }}">
+                <!-- Hidden fields to preserve search parameters -->
+                {% for key, value in request.args.items() %}
+                    <input type="hidden" name="{{ key }}" value="{{ value }}">
+                {% endfor %}
+                
+                <div class="form-group">
+                    <label class="form-label">Nama Pencarian</label>
+                    <input type="text" name="name" class="form-control" required placeholder="Contoh: Laporan IGD Pending">
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeSaveModal()">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleSearchForm() {
+            const form = document.getElementById('search-form');
+            const toggleText = document.getElementById('toggle-text');
+            
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+                toggleText.textContent = 'Sembunyikan';
+            } else {
+                form.style.display = 'none';
+                toggleText.textContent = 'Tampilkan';
+            }
+        }
+        
+        function showSaveModal() {
+            document.getElementById('saveModal').style.display = 'block';
+        }
+        
+        function closeSaveModal() {
+            document.getElementById('saveModal').style.display = 'none';
+        }
+        
+        // Show search form if there are search parameters
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if there are URL parameters to show search form
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.toString()) {
+                toggleSearchForm();
+            }
+        });
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('saveModal');
+            if (event.target == modal) {
+                closeSaveModal();
+            }
+        }
+    </script>
 </body>
 </html>
