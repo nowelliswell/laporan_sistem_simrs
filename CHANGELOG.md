@@ -5,6 +5,63 @@ All notable changes to BAP SIMRS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-01-07
+
+### 🎨 Major UI/UX Redesign
+- **Complete Visual Overhaul**
+  - Created modern, consistent design system with CSS custom properties
+  - Implemented base.html template for unified styling across all pages
+  - Added gradient backgrounds and smooth animations
+  - Professional color palette with proper contrast ratios
+
+- **Responsive Design**
+  - Mobile-first approach with flexible grid systems
+  - Touch-friendly interfaces for mobile devices
+  - Adaptive navigation and layouts
+  - Optimized for all screen sizes
+
+- **Interactive Elements**
+  - Hover effects and smooth transitions
+  - Animated loading states and feedback
+  - Modern button styles with visual feedback
+  - Enhanced form components with focus states
+
+### 📋 Template Modernization
+- **login.html**: Modern login form with slide-up animations
+- **dashboard.html**: Enhanced search panel with dynamic filtering
+- **tambah_laporan.html**: Improved form layout with helpful tips and icons
+- **detail_laporan.html**: Card-based information display with better organization
+- **edit_status.html**: Better form structure with contextual information
+- **statistik.html**: Interactive charts with shimmer effects and animations
+- **users.html & add_user.html**: Modern user management interface
+- **Error Pages**: Professional 404/500 pages with animations
+
+### 🔧 Backend Improvements
+- **ID-Based Sorting System**
+  - Implemented ascending ID sorting as default across all pages
+  - Added ID sorting option to search forms
+  - Consistent ordering in dashboard and statistics
+  - Enhanced query optimization for better performance
+
+- **Enhanced Forms**
+  - Added unit field to user creation
+  - Improved form validation and error handling
+  - Better field organization and labeling
+  - Enhanced search functionality with ID sorting
+
+### 🎯 User Experience Enhancements
+- **Status Badges**: Color-coded status indicators with icons
+- **Navigation**: Consistent navigation with breadcrumbs
+- **Feedback**: Clear success/error messages with proper styling
+- **Loading States**: Animated loading indicators and transitions
+- **Empty States**: Helpful empty state messages with call-to-actions
+
+### 🚀 Performance & Code Quality
+- **CSS Optimization**: Organized CSS with custom properties
+- **JavaScript Enhancements**: Improved event handling and animations
+- **Template Structure**: Better separation of concerns
+- **Code Maintainability**: Enhanced code organization and documentation
+
 ## [1.1.0] - 2026-01-07
 
 ### Fixed
@@ -103,31 +160,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned for v1.1.0
-- Bootstrap 5 UI framework integration
-- Responsive mobile design
-- Advanced search and filtering
+### Planned for v2.1.0
+- Advanced search filters with date ranges
+- Bulk operations for report management
 - Email notification system
-- Bulk operations support
+- Export functionality (PDF, Excel)
+- Advanced user permissions
 
-### Planned for v1.2.0
+### Planned for v3.0.0
 - REST API endpoints
-- Real-time notifications
-- Advanced reporting and export
+- Real-time notifications with WebSocket
+- Advanced analytics dashboard
 - Integration capabilities
 - Performance optimizations
-
-### Planned for v2.0.0
-- Multi-tenant support
-- Advanced analytics dashboard
-- Workflow automation
-- Mobile application
-- Microservices architecture
 
 ---
 
 ## Version History
 
+- **v2.0.0** - Major UI/UX redesign with modern interface
+- **v1.1.0** - Bug fixes and template improvements
 - **v1.0.0** - Initial release with core functionality
 - **v0.9.0** - Beta release for testing
 - **v0.8.0** - Alpha release with basic features
