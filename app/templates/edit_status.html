@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Status Laporan #{{ laporan.id }} - BAP SIMRS{% endblock %}
+{% block page_title %}✏️ Edit Status Laporan #{{ laporan.id }}{% endblock %}
+
+{% block content %}
+<div class="content-panel">
+    <div class="panel-header">
+        <span>🔧</span>
+        Edit Status Laporan Kesalahan SIMRS
+    </div>
+    <div class="panel-content">
+        <!-- Laporan Info -->
+        <div
+            style="padding: 1.5rem; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: var(--radius-lg); margin-bottom: 2rem; border-left: 4px solid var(--primary-color);">
+            <h4 style="margin: 0 0 1rem 0; color: var(--text-primary); font-size: 1.125rem; font-weight: 700;">📋
+                Informasi Laporan</h4>
+
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                <div>
+                    <div
+                        style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                        Unit</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">🏥 {{ laporan.unit }}</div>
+                </div>
+                <div>
+                    <div
+                        style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                        Pelapor</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">👤 {{ laporan.pelapor }}</div>
+                </div>
+                <div>
+                    <div
+                        style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                        Jenis Kesalahan</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">⚠️ {{ laporan.jenis_kesalahan }}</div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                <div>
+                    <div
+                        style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                        Status Saat Ini</div>
+                    <div>
+                        {% if laporan.status == 'pending' %}
+                        <span class="status-badge status-pending">⏳ Pending</span>
+                        {% elif laporan.status == 'in_progress' %}
+                        <span class="status-badge status-progress">🔄 In Progress</span>
+                        {% elif laporan.status == 'resolved' %}
+                        <span class="status-badge status-completed">✅ Resolved</span>
+                        {% else %}
+                        <span class="status-badge status-pending">{{ laporan.status }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div
+                        style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                        Tanggal Dibuat</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">🕒 {{ format_datetime(laporan.created_at)
+                        }}</div>
+                </div>
+                {% if laporan.assignee %}
+                <div>
+                    <div
+                        style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                        Ditugaskan Ke</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">👨‍🔧 {{ laporan.assignee.username }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Edit Form -->
+        <form method="post" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+                {{ form.status.label(class="form-label") }}
+                <span style="color: var(--danger-color);">*</span>
+                {{ form.status(class="form-select") }}
+                {% if form.status.errors %}
+                {% for error in form.status.errors %}
+                <div style="color: var(--danger-color); font-size: 0.75rem; margin-top: 0.25rem;">{{ error }}</div>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.assigned_to.label(class="form-label") }}
+                {{ form.assigned_to(class="form-select") }}
+                {% if form.assigned_to.errors %}
+                {% for error in form.assigned_to.errors %}
+                <div style="color: var(--danger-color); font-size: 0.75rem; margin-top: 0.25rem;">{{ error }}</div>
+                {% endfor %}
+                {% endif %}
+                <div
+                    style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; padding: 0.75rem; background: var(--surface-hover); border-radius: var(--radius-sm);">
+                    💡 <strong>Tips:</strong> Pilih user untuk menugaskan laporan ini. Kosongkan jika tidak ingin
+                    menugaskan ke siapa pun.
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary">
+                    <span>💾</span> Update Status
+                </button>
+                <a href="{{ url_for('reports.detail', id=laporan.id) }}" class="btn btn-secondary">
+                    <span>❌</span> Batal
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

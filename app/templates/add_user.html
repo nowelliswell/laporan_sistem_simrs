@@ -12,15 +12,15 @@
     <div class="panel-content">
         <form method="post" novalidate>
             {{ form.hidden_tag() }}
-            
+
             <div class="form-group">
                 {{ form.username.label(class="form-label") }}
                 <span style="color: var(--danger-color);">*</span>
                 {{ form.username(class="form-input", placeholder="Username untuk login sistem") }}
                 {% if form.username.errors %}
-                    {% for error in form.username.errors %}
-                        <div style="color: var(--danger-color); font-size: 0.75rem; margin-top: 0.25rem;">{{ error }}</div>
-                    {% endfor %}
+                {% for error in form.username.errors %}
+                <div style="color: var(--danger-color); font-size: 0.75rem; margin-top: 0.25rem;">{{ error }}</div>
+                {% endfor %}
                 {% endif %}
                 <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
                     💡 Username harus unik dan akan digunakan untuk login
@@ -31,9 +31,9 @@
                 {{ form.email.label(class="form-label") }}
                 {{ form.email(class="form-input", placeholder="email@example.com (opsional)") }}
                 {% if form.email.errors %}
-                    {% for error in form.email.errors %}
-                        <div style="color: var(--danger-color); font-size: 0.75rem; margin-top: 0.25rem;">{{ error }}</div>
-                    {% endfor %}
+                {% for error in form.email.errors %}
+                <div style="color: var(--danger-color); font-size: 0.75rem; margin-top: 0.25rem;">{{ error }}</div>
+                {% endfor %}
                 {% endif %}
             </div>
 
@@ -41,9 +41,9 @@
                 {{ form.unit.label(class="form-label") }}
                 {{ form.unit(class="form-input", placeholder="Contoh: IGD, Rawat Inap, IT") }}
                 {% if form.unit.errors %}
-                    {% for error in form.unit.errors %}
-                        <div style="color: var(--danger-color); font-size: 0.75rem; margin-top: 0.25rem;">{{ error }}</div>
-                    {% endfor %}
+                {% for error in form.unit.errors %}
+                <div style="color: var(--danger-color); font-size: 0.75rem; margin-top: 0.25rem;">{{ error }}</div>
+                {% endfor %}
                 {% endif %}
                 <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
                     🏥 Unit kerja user di rumah sakit
@@ -55,9 +55,9 @@
                 <span style="color: var(--danger-color);">*</span>
                 {{ form.password(class="form-input", placeholder="Password minimal 6 karakter") }}
                 {% if form.password.errors %}
-                    {% for error in form.password.errors %}
-                        <div style="color: var(--danger-color); font-size: 0.75rem; margin-top: 0.25rem;">{{ error }}</div>
-                    {% endfor %}
+                {% for error in form.password.errors %}
+                <div style="color: var(--danger-color); font-size: 0.75rem; margin-top: 0.25rem;">{{ error }}</div>
+                {% endfor %}
                 {% endif %}
                 <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
                     🔒 Gunakan password yang kuat untuk keamanan
@@ -69,11 +69,12 @@
                 <span style="color: var(--danger-color);">*</span>
                 {{ form.role(class="form-select") }}
                 {% if form.role.errors %}
-                    {% for error in form.role.errors %}
-                        <div style="color: var(--danger-color); font-size: 0.75rem; margin-top: 0.25rem;">{{ error }}</div>
-                    {% endfor %}
+                {% for error in form.role.errors %}
+                <div style="color: var(--danger-color); font-size: 0.75rem; margin-top: 0.25rem;">{{ error }}</div>
+                {% endfor %}
                 {% endif %}
-                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; padding: 0.75rem; background: var(--surface-hover); border-radius: var(--radius-sm);">
+                <div
+                    style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; padding: 0.75rem; background: var(--surface-hover); border-radius: var(--radius-sm);">
                     <strong>🔑 Perbedaan Role:</strong><br>
                     • <strong>Admin:</strong> Dapat mengelola user, edit status laporan, dan akses penuh<br>
                     • <strong>User:</strong> Dapat membuat laporan dan melihat laporan sendiri
@@ -84,7 +85,7 @@
                 <button type="submit" class="btn btn-primary">
                     <span>💾</span> Simpan User
                 </button>
-                <a href="{{ url_for('users') }}" class="btn btn-secondary">
+                <a href="{{ url_for('users.users') }}" class="btn btn-secondary">
                     <span>❌</span> Batal
                 </a>
             </div>

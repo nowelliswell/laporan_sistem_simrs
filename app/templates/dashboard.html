@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+
 <head>
     <title>Dashboard - BAP SIMRS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,7 +35,7 @@
             box-sizing: border-box;
         }
 
-        body { 
+        body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--background);
             color: var(--text-primary);
@@ -48,7 +49,7 @@
         }
 
         /* Header Styles */
-        .header { 
+        .header {
             background: var(--surface);
             padding: 1.5rem;
             border-radius: var(--radius-xl);
@@ -65,26 +66,26 @@
             gap: 1rem;
         }
 
-        .header h2 { 
+        .header h2 {
             color: var(--text-primary);
             font-weight: 700;
             font-size: 1.5rem;
         }
 
-        .user-info { 
+        .user-info {
             color: var(--text-secondary);
             font-size: 0.875rem;
             font-weight: 500;
         }
 
-        .nav-links { 
+        .nav-links {
             display: flex;
             gap: 0.75rem;
             flex-wrap: wrap;
             margin-top: 1rem;
         }
 
-        .nav-links a { 
+        .nav-links a {
             color: var(--primary-color);
             text-decoration: none;
             padding: 0.5rem 1rem;
@@ -98,7 +99,7 @@
             gap: 0.5rem;
         }
 
-        .nav-links a:hover { 
+        .nav-links a:hover {
             background: var(--primary-color);
             color: white;
             transform: translateY(-1px);
@@ -106,7 +107,7 @@
         }
 
         /* Modern Search Panel */
-        .search-panel { 
+        .search-panel {
             background: var(--surface);
             border-radius: var(--radius-xl);
             margin-bottom: 1.5rem;
@@ -144,8 +145,15 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
         }
 
         .search-toggle {
@@ -309,7 +317,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
             transition: left 0.5s;
         }
 
@@ -453,7 +461,8 @@
             background: var(--surface);
         }
 
-        th, td {
+        th,
+        td {
             padding: 1rem;
             text-align: left;
             border-bottom: 1px solid var(--border);
@@ -490,15 +499,17 @@
         }
 
         /* Status Badges */
-        .status-pending { 
+        .status-pending {
             color: var(--warning-color);
             font-weight: 600;
         }
-        .status-in_progress { 
+
+        .status-in_progress {
             color: #0ea5e9;
             font-weight: 600;
         }
-        .status-resolved { 
+
+        .status-resolved {
             color: var(--success-color);
             font-weight: 600;
         }
@@ -577,6 +588,7 @@
                 opacity: 0;
                 transform: translateY(-50px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -638,7 +650,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Smooth Transitions */
@@ -647,6 +661,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -657,18 +672,18 @@
                 </div>
             </div>
             <div class="nav-links">
-                <a href="{{ url_for('tambah_laporan') }}">
+                <a href="{{ url_for('reports.tambah_laporan') }}">
                     <span>➕</span> Tambah Laporan
                 </a>
-                <a href="{{ url_for('statistik') }}">
+                <a href="{{ url_for('main.statistik') }}">
                     <span>📊</span> Statistik
                 </a>
                 {% if current_user.is_admin() %}
-                    <a href="{{ url_for('users') }}">
-                        <span>👥</span> Kelola User
-                    </a>
+                <a href="{{ url_for('users.users') }}">
+                    <span>👥</span> Kelola User
+                </a>
                 {% endif %}
-                <a href="{{ url_for('logout') }}">
+                <a href="{{ url_for('auth.logout') }}">
                     <span>🚪</span> Logout
                 </a>
             </div>
@@ -676,13 +691,13 @@
 
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ 'error' if category == 'error' else category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ 'error' if category == 'error' else category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
         {% endwith %}
 
         <!-- Modern Search Panel -->
@@ -696,7 +711,7 @@
                     <span id="toggle-text">Tampilkan Filter</span>
                 </button>
             </div>
-            
+
             <!-- Search Statistics -->
             {% if search_stats %}
             <div class="search-stats">
@@ -718,162 +733,184 @@
                 </div>
             </div>
             {% endif %}
-            
+
             <!-- Dynamic Search Form -->
             <div id="search-form" class="search-form-container">
-                <form method="get" action="{{ url_for('dashboard') }}" id="searchForm">
+                <form method="get" action="{{ url_for('main.dashboard') }}" id="searchForm">
                     <div class="search-form">
                         <div class="form-group">
                             {% if search_form.search_query %}
-                                {{ search_form.search_query.label(class="form-label") }}
-                                {{ search_form.search_query(class="form-control", placeholder="🔍 Cari dalam unit, pelapor, deskripsi...", autocomplete="off") }}
+                            {{ search_form.search_query.label(class="form-label") }}
+                            {{ search_form.search_query(class="form-control", placeholder="🔍 Cari dalam unit, pelapor,
+                            deskripsi...", autocomplete="off") }}
                             {% else %}
-                                <label class="form-label">Pencarian Global</label>
-                                <input type="text" name="search_query" class="form-control" placeholder="🔍 Cari dalam unit, pelapor, deskripsi..." value="{{ request.args.get('search_query', '') }}" autocomplete="off">
+                            <label class="form-label">Pencarian Global</label>
+                            <input type="text" name="search_query" class="form-control"
+                                placeholder="🔍 Cari dalam unit, pelapor, deskripsi..."
+                                value="{{ request.args.get('search_query', '') }}" autocomplete="off">
                             {% endif %}
                         </div>
-                        
+
                         <div class="form-group">
                             <div class="select-wrapper">
                                 {% if search_form.unit_filter %}
-                                    {{ search_form.unit_filter.label(class="form-label") }}
-                                    {{ search_form.unit_filter(class="form-control") }}
+                                {{ search_form.unit_filter.label(class="form-label") }}
+                                {{ search_form.unit_filter(class="form-control") }}
                                 {% else %}
-                                    <label class="form-label">Unit/Departemen</label>
-                                    <select name="unit_filter" class="form-control">
-                                        <option value="">🏥 Semua Unit</option>
-                                    </select>
+                                <label class="form-label">Unit/Departemen</label>
+                                <select name="unit_filter" class="form-control">
+                                    <option value="">🏥 Semua Unit</option>
+                                </select>
                                 {% endif %}
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <div class="select-wrapper">
                                 {% if search_form.status_filter %}
-                                    {{ search_form.status_filter.label(class="form-label") }}
-                                    {{ search_form.status_filter(class="form-control") }}
+                                {{ search_form.status_filter.label(class="form-label") }}
+                                {{ search_form.status_filter(class="form-control") }}
                                 {% else %}
-                                    <label class="form-label">Status Laporan</label>
-                                    <select name="status_filter" class="form-control">
-                                        <option value="">📋 Semua Status</option>
-                                        <option value="pending" {% if request.args.get('status_filter') == 'pending' %}selected{% endif %}>⏳ Pending</option>
-                                        <option value="in_progress" {% if request.args.get('status_filter') == 'in_progress' %}selected{% endif %}>🔄 In Progress</option>
-                                        <option value="resolved" {% if request.args.get('status_filter') == 'resolved' %}selected{% endif %}>✅ Resolved</option>
-                                    </select>
+                                <label class="form-label">Status Laporan</label>
+                                <select name="status_filter" class="form-control">
+                                    <option value="">📋 Semua Status</option>
+                                    <option value="pending" {% if request.args.get('status_filter')=='pending'
+                                        %}selected{% endif %}>⏳ Pending</option>
+                                    <option value="in_progress" {% if request.args.get('status_filter')=='in_progress'
+                                        %}selected{% endif %}>🔄 In Progress</option>
+                                    <option value="resolved" {% if request.args.get('status_filter')=='resolved'
+                                        %}selected{% endif %}>✅ Resolved</option>
+                                </select>
                                 {% endif %}
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <div class="select-wrapper">
                                 {% if search_form.jenis_filter %}
-                                    {{ search_form.jenis_filter.label(class="form-label") }}
-                                    {{ search_form.jenis_filter(class="form-control") }}
+                                {{ search_form.jenis_filter.label(class="form-label") }}
+                                {{ search_form.jenis_filter(class="form-control") }}
                                 {% else %}
-                                    <label class="form-label">Jenis Kesalahan</label>
-                                    <select name="jenis_filter" class="form-control">
-                                        <option value="">🔧 Semua Jenis</option>
-                                        <option value="Data Pasien" {% if request.args.get('jenis_filter') == 'Data Pasien' %}selected{% endif %}>👤 Data Pasien</option>
-                                        <option value="Transaksi" {% if request.args.get('jenis_filter') == 'Transaksi' %}selected{% endif %}>💳 Transaksi</option>
-                                        <option value="Sistem Error" {% if request.args.get('jenis_filter') == 'Sistem Error' %}selected{% endif %}>⚠️ Sistem Error</option>
-                                        <option value="Lainnya" {% if request.args.get('jenis_filter') == 'Lainnya' %}selected{% endif %}>📝 Lainnya</option>
-                                    </select>
+                                <label class="form-label">Jenis Kesalahan</label>
+                                <select name="jenis_filter" class="form-control">
+                                    <option value="">🔧 Semua Jenis</option>
+                                    <option value="Data Pasien" {% if request.args.get('jenis_filter')=='Data Pasien'
+                                        %}selected{% endif %}>👤 Data Pasien</option>
+                                    <option value="Transaksi" {% if request.args.get('jenis_filter')=='Transaksi'
+                                        %}selected{% endif %}>💳 Transaksi</option>
+                                    <option value="Sistem Error" {% if request.args.get('jenis_filter')=='Sistem Error'
+                                        %}selected{% endif %}>⚠️ Sistem Error</option>
+                                    <option value="Lainnya" {% if request.args.get('jenis_filter')=='Lainnya'
+                                        %}selected{% endif %}>📝 Lainnya</option>
+                                </select>
                                 {% endif %}
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             {% if search_form.pelapor_filter %}
-                                {{ search_form.pelapor_filter.label(class="form-label") }}
-                                {{ search_form.pelapor_filter(class="form-control", placeholder="👤 Nama pelapor...") }}
+                            {{ search_form.pelapor_filter.label(class="form-label") }}
+                            {{ search_form.pelapor_filter(class="form-control", placeholder="👤 Nama pelapor...") }}
                             {% else %}
-                                <label class="form-label">Pelapor</label>
-                                <input type="text" name="pelapor_filter" class="form-control" placeholder="👤 Nama pelapor..." value="{{ request.args.get('pelapor_filter', '') }}">
+                            <label class="form-label">Pelapor</label>
+                            <input type="text" name="pelapor_filter" class="form-control"
+                                placeholder="👤 Nama pelapor..." value="{{ request.args.get('pelapor_filter', '') }}">
                             {% endif %}
                         </div>
-                        
+
                         <div class="form-group">
                             {% if search_form.date_from %}
-                                {{ search_form.date_from.label(class="form-label") }}
-                                {{ search_form.date_from(class="form-control") }}
+                            {{ search_form.date_from.label(class="form-label") }}
+                            {{ search_form.date_from(class="form-control") }}
                             {% else %}
-                                <label class="form-label">📅 Dari Tanggal</label>
-                                <input type="date" name="date_from" class="form-control" value="{{ request.args.get('date_from', '') }}">
+                            <label class="form-label">📅 Dari Tanggal</label>
+                            <input type="date" name="date_from" class="form-control"
+                                value="{{ request.args.get('date_from', '') }}">
                             {% endif %}
                         </div>
-                        
+
                         <div class="form-group">
                             {% if search_form.date_to %}
-                                {{ search_form.date_to.label(class="form-label") }}
-                                {{ search_form.date_to(class="form-control") }}
+                            {{ search_form.date_to.label(class="form-label") }}
+                            {{ search_form.date_to(class="form-control") }}
                             {% else %}
-                                <label class="form-label">📅 Sampai Tanggal</label>
-                                <input type="date" name="date_to" class="form-control" value="{{ request.args.get('date_to', '') }}">
+                            <label class="form-label">📅 Sampai Tanggal</label>
+                            <input type="date" name="date_to" class="form-control"
+                                value="{{ request.args.get('date_to', '') }}">
                             {% endif %}
                         </div>
-                        
+
                         <div class="form-group">
                             <div class="select-wrapper">
                                 {% if search_form.sort_by %}
-                                    {{ search_form.sort_by.label(class="form-label") }}
-                                    {{ search_form.sort_by(class="form-control") }}
+                                {{ search_form.sort_by.label(class="form-label") }}
+                                {{ search_form.sort_by(class="form-control") }}
                                 {% else %}
-                                    <label class="form-label">Urutkan berdasarkan</label>
-                                    <select name="sort_by" class="form-control">
-                                        <option value="created_at" {% if request.args.get('sort_by', 'created_at') == 'created_at' %}selected{% endif %}>📅 Tanggal Dibuat</option>
-                                        <option value="tgl_kejadian" {% if request.args.get('sort_by') == 'tgl_kejadian' %}selected{% endif %}>⏰ Tanggal Kejadian</option>
-                                        <option value="unit" {% if request.args.get('sort_by') == 'unit' %}selected{% endif %}>🏥 Unit</option>
-                                        <option value="pelapor" {% if request.args.get('sort_by') == 'pelapor' %}selected{% endif %}>👤 Pelapor</option>
-                                        <option value="status" {% if request.args.get('sort_by') == 'status' %}selected{% endif %}>📊 Status</option>
-                                        <option value="jenis_kesalahan" {% if request.args.get('sort_by') == 'jenis_kesalahan' %}selected{% endif %}>🔧 Jenis Kesalahan</option>
-                                    </select>
+                                <label class="form-label">Urutkan berdasarkan</label>
+                                <select name="sort_by" class="form-control">
+                                    <option value="created_at" {% if request.args.get('sort_by', 'created_at'
+                                        )=='created_at' %}selected{% endif %}>📅 Tanggal Dibuat</option>
+                                    <option value="tgl_kejadian" {% if request.args.get('sort_by')=='tgl_kejadian'
+                                        %}selected{% endif %}>⏰ Tanggal Kejadian</option>
+                                    <option value="unit" {% if request.args.get('sort_by')=='unit' %}selected{% endif
+                                        %}>🏥 Unit</option>
+                                    <option value="pelapor" {% if request.args.get('sort_by')=='pelapor' %}selected{%
+                                        endif %}>👤 Pelapor</option>
+                                    <option value="status" {% if request.args.get('sort_by')=='status' %}selected{%
+                                        endif %}>📊 Status</option>
+                                    <option value="jenis_kesalahan" {% if request.args.get('sort_by')=='jenis_kesalahan'
+                                        %}selected{% endif %}>🔧 Jenis Kesalahan</option>
+                                </select>
                                 {% endif %}
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <div class="select-wrapper">
                                 {% if search_form.sort_order %}
-                                    {{ search_form.sort_order.label(class="form-label") }}
-                                    {{ search_form.sort_order(class="form-control") }}
+                                {{ search_form.sort_order.label(class="form-label") }}
+                                {{ search_form.sort_order(class="form-control") }}
                                 {% else %}
-                                    <label class="form-label">Urutan</label>
-                                    <select name="sort_order" class="form-control">
-                                        <option value="desc" {% if request.args.get('sort_order', 'desc') == 'desc' %}selected{% endif %}>⬇️ Terbaru ke Terlama</option>
-                                        <option value="asc" {% if request.args.get('sort_order') == 'asc' %}selected{% endif %}>⬆️ Terlama ke Terbaru</option>
-                                    </select>
+                                <label class="form-label">Urutan</label>
+                                <select name="sort_order" class="form-control">
+                                    <option value="desc" {% if request.args.get('sort_order', 'desc' )=='desc'
+                                        %}selected{% endif %}>⬇️ Terbaru ke Terlama</option>
+                                    <option value="asc" {% if request.args.get('sort_order')=='asc' %}selected{% endif
+                                        %}>⬆️ Terlama ke Terbaru</option>
+                                </select>
                                 {% endif %}
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="search-actions">
                         <button type="submit" class="btn btn-primary">
                             <span>🔍</span> Cari Sekarang
                         </button>
-                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                        <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">
                             <span>🔄</span> Reset Filter
                         </a>
                         {% if request.args and request.args|length > 0 %}
-                            <a href="{{ url_for('export_results') }}?{{ request.query_string.decode() }}" class="btn btn-success">
-                                <span>📥</span> Export CSV
-                            </a>
-                            <button type="button" class="btn btn-outline" onclick="showSaveModal()">
-                                <span>💾</span> Simpan Pencarian
-                            </button>
+                        <a href="{{ url_for('main.export_results') }}?{{ request.query_string.decode() }}"
+                            class="btn btn-success">
+                            <span>📥</span> Export CSV
+                        </a>
+                        <button type="button" class="btn btn-outline" onclick="showSaveModal()">
+                            <span>💾</span> Simpan Pencarian
+                        </button>
                         {% endif %}
                     </div>
                 </form>
-                
+
                 <!-- Saved Searches -->
                 {% if saved_searches %}
                 <div class="saved-searches">
                     <div class="saved-searches-title">🔖 Pencarian Tersimpan:</div>
                     <div class="saved-search-tags">
                         {% for search in saved_searches %}
-                            <span class="saved-search-tag" onclick="applySavedSearch('{{ search.query }}')">
-                                {{ search.name }}
-                            </span>
+                        <span class="saved-search-tag" onclick="applySavedSearch('{{ search.query }}')">
+                            {{ search.name }}
+                        </span>
                         {% endfor %}
                     </div>
                 </div>
@@ -885,85 +922,85 @@
             <h3>📋 Daftar Laporan Kesalahan SIMRS</h3>
 
             {% if laporan and laporan.items %}
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Unit</th>
-                                <th>Pelapor</th>
-                                <th>Jenis</th>
-                                <th>Status</th>
-                                <th>Tanggal Dibuat</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for l in laporan.items %}
-                            <tr>
-                                <td><strong>#{{ l.id }}</strong></td>
-                                <td>{{ l.unit }}</td>
-                                <td>{{ l.pelapor }}</td>
-                                <td>{{ l.jenis_kesalahan }}</td>
-                                <td>
-                                    <span class="status-{{ l.status }}">
-                                        {% if l.status == 'pending' %}⏳ Pending
-                                        {% elif l.status == 'in_progress' %}🔄 In Progress
-                                        {% elif l.status == 'resolved' %}✅ Resolved
-                                        {% else %}{{ l.status }}
-                                        {% endif %}
-                                    </span>
-                                </td>
-                                <td>{{ format_datetime(l.created_at) }}</td>
-                                <td>
-                                    <a href="{{ url_for('detail', id=l.id) }}" class="btn-detail">
-                                        👁️ Detail
-                                    </a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Unit</th>
+                            <th>Pelapor</th>
+                            <th>Jenis</th>
+                            <th>Status</th>
+                            <th>Tanggal Dibuat</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for l in laporan.items %}
+                        <tr>
+                            <td><strong>#{{ l.id }}</strong></td>
+                            <td>{{ l.unit }}</td>
+                            <td>{{ l.pelapor }}</td>
+                            <td>{{ l.jenis_kesalahan }}</td>
+                            <td>
+                                <span class="status-{{ l.status }}">
+                                    {% if l.status == 'pending' %}⏳ Pending
+                                    {% elif l.status == 'in_progress' %}🔄 In Progress
+                                    {% elif l.status == 'resolved' %}✅ Resolved
+                                    {% else %}{{ l.status }}
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>{{ format_datetime(l.created_at) }}</td>
+                            <td>
+                                <a href="{{ url_for('reports.detail', id=l.id) }}" class="btn-detail">
+                                    👁️ Detail
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Modern Pagination -->
+            {% if laporan.pages > 1 %}
+            <div class="pagination-container">
+                {% if laporan.has_prev %}
+                <a href="{{ url_for_page(laporan.prev_num) }}" class="pagination-btn">
+                    ← Sebelumnya
+                </a>
+                {% endif %}
+
+                <div class="pagination-numbers">
+                    {% for page_num in laporan.iter_pages() %}
+                    {% if page_num %}
+                    {% if page_num != laporan.page %}
+                    <a href="{{ url_for_page(page_num) }}" class="pagination-number">{{ page_num }}</a>
+                    {% else %}
+                    <span class="pagination-number active">{{ page_num }}</span>
+                    {% endif %}
+                    {% else %}
+                    <span class="pagination-dots">...</span>
+                    {% endif %}
+                    {% endfor %}
                 </div>
 
-                <!-- Modern Pagination -->
-                {% if laporan.pages > 1 %}
-                    <div class="pagination-container">
-                        {% if laporan.has_prev %}
-                            <a href="{{ url_for('dashboard', page=laporan.prev_num) }}{% if request.query_string %}?{{ request.query_string.decode() }}{% endif %}" class="pagination-btn">
-                                ← Sebelumnya
-                            </a>
-                        {% endif %}
-                        
-                        <div class="pagination-numbers">
-                            {% for page_num in laporan.iter_pages() %}
-                                {% if page_num %}
-                                    {% if page_num != laporan.page %}
-                                        <a href="{{ url_for('dashboard', page=page_num) }}{% if request.query_string %}?{{ request.query_string.decode() }}{% endif %}" class="pagination-number">{{ page_num }}</a>
-                                    {% else %}
-                                        <span class="pagination-number active">{{ page_num }}</span>
-                                    {% endif %}
-                                {% else %}
-                                    <span class="pagination-dots">...</span>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                        
-                        {% if laporan.has_next %}
-                            <a href="{{ url_for('dashboard', page=laporan.next_num) }}{% if request.query_string %}?{{ request.query_string.decode() }}{% endif %}" class="pagination-btn">
-                                Selanjutnya →
-                            </a>
-                        {% endif %}
-                    </div>
+                {% if laporan.has_next %}
+                <a href="{{ url_for_page(laporan.next_num) }}" class="pagination-btn">
+                    Selanjutnya →
+                </a>
                 {% endif %}
+            </div>
+            {% endif %}
             {% else %}
-                <div class="no-data">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
-                    <p>Tidak ada laporan yang ditemukan.</p>
-                    <a href="{{ url_for('tambah_laporan') }}" class="btn btn-primary" style="margin-top: 1rem;">
-                        ➕ Buat laporan baru
-                    </a>
-                </div>
+            <div class="no-data">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+                <p>Tidak ada laporan yang ditemukan.</p>
+                <a href="{{ url_for('reports.tambah_laporan') }}" class="btn btn-primary" style="margin-top: 1rem;">
+                    ➕ Buat laporan baru
+                </a>
+            </div>
             {% endif %}
         </div>
 
@@ -972,17 +1009,18 @@
             <div class="modal-content">
                 <span class="close" onclick="closeSaveModal()">&times;</span>
                 <h3 style="margin-bottom: 1.5rem; color: var(--text-primary);">💾 Simpan Pencarian</h3>
-                <form method="post" action="{{ url_for('save_search') }}">
+                <form method="post" action="{{ url_for('main.save_search') }}">
                     <!-- Hidden fields to preserve search parameters -->
                     {% for key, value in request.args.items() %}
-                        <input type="hidden" name="{{ key }}" value="{{ value }}">
+                    <input type="hidden" name="{{ key }}" value="{{ value }}">
                     {% endfor %}
-                    
+
                     <div class="form-group">
                         <label class="form-label">Nama Pencarian</label>
-                        <input type="text" name="name" class="form-control" required placeholder="Contoh: Laporan IGD Pending">
+                        <input type="text" name="name" class="form-control" required
+                            placeholder="Contoh: Laporan IGD Pending">
                     </div>
-                    
+
                     <div style="margin-top: 2rem; display: flex; gap: 0.75rem;">
                         <button type="submit" class="btn btn-primary">💾 Simpan</button>
                         <button type="button" class="btn btn-secondary" onclick="closeSaveModal()">❌ Batal</button>
@@ -998,7 +1036,7 @@
             const form = document.getElementById('search-form');
             const toggleText = document.getElementById('toggle-text');
             const isActive = form.classList.contains('active');
-            
+
             if (!isActive) {
                 form.classList.add('active');
                 toggleText.textContent = 'Sembunyikan Filter';
@@ -1017,34 +1055,34 @@
                 toggleText.textContent = 'Tampilkan Filter';
             }
         }
-        
+
         // Modal Functions
         function showSaveModal() {
             document.getElementById('saveModal').style.display = 'block';
             document.body.style.overflow = 'hidden';
         }
-        
+
         function closeSaveModal() {
             document.getElementById('saveModal').style.display = 'none';
             document.body.style.overflow = 'auto';
         }
-        
+
         // Enhanced Form Interactions
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Auto-show search form if there are search parameters
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.toString() && !urlParams.has('page')) {
                 toggleSearchForm();
             }
-            
+
             // Add real-time search suggestions (basic implementation)
             const searchInput = document.querySelector('input[name="search_query"]');
             if (searchInput) {
                 let searchTimeout;
-                searchInput.addEventListener('input', function() {
+                searchInput.addEventListener('input', function () {
                     clearTimeout(searchTimeout);
                     const query = this.value.trim();
-                    
+
                     if (query.length > 2) {
                         searchTimeout = setTimeout(() => {
                             // Add visual feedback for active search
@@ -1057,50 +1095,50 @@
                     }
                 });
             }
-            
+
             // Enhanced form field interactions
             const formControls = document.querySelectorAll('.form-control');
             formControls.forEach(control => {
                 // Add floating label effect
-                control.addEventListener('focus', function() {
+                control.addEventListener('focus', function () {
                     const label = this.previousElementSibling;
                     if (label && label.classList.contains('form-label')) {
                         label.style.color = 'var(--primary-color)';
                         label.style.transform = 'translateY(-2px)';
                     }
                 });
-                
-                control.addEventListener('blur', function() {
+
+                control.addEventListener('blur', function () {
                     const label = this.previousElementSibling;
                     if (label && label.classList.contains('form-label')) {
                         label.style.color = 'var(--text-primary)';
                         label.style.transform = 'translateY(0)';
                     }
                 });
-                
+
                 // Add value change animation
-                control.addEventListener('change', function() {
+                control.addEventListener('change', function () {
                     this.style.transform = 'scale(1.02)';
                     setTimeout(() => {
                         this.style.transform = 'scale(1)';
                     }, 150);
                 });
             });
-            
+
             // Smart form validation
             const searchForm = document.getElementById('searchForm');
             if (searchForm) {
-                searchForm.addEventListener('submit', function(e) {
+                searchForm.addEventListener('submit', function (e) {
                     const formData = new FormData(this);
                     let hasFilters = false;
-                    
+
                     for (let [key, value] of formData.entries()) {
                         if (value.trim() !== '') {
                             hasFilters = true;
                             break;
                         }
                     }
-                    
+
                     if (!hasFilters) {
                         e.preventDefault();
                         // Show gentle reminder
@@ -1119,7 +1157,7 @@
                             const originalText = submitBtn.innerHTML;
                             submitBtn.innerHTML = '<span class="loading"></span> Mencari...';
                             submitBtn.disabled = true;
-                            
+
                             // Re-enable after a short delay (in case of quick response)
                             setTimeout(() => {
                                 submitBtn.innerHTML = originalText;
@@ -1129,9 +1167,9 @@
                     }
                 });
             }
-            
+
             // Add keyboard shortcuts
-            document.addEventListener('keydown', function(e) {
+            document.addEventListener('keydown', function (e) {
                 // Ctrl/Cmd + K to focus search
                 if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                     e.preventDefault();
@@ -1143,32 +1181,32 @@
                         setTimeout(() => searchInput.focus(), 300);
                     }
                 }
-                
+
                 // Escape to close modal
                 if (e.key === 'Escape') {
                     closeSaveModal();
                 }
             });
-            
+
             // Add smooth scroll to results after search
             if (window.location.search && document.querySelector('table')) {
                 setTimeout(() => {
-                    document.querySelector('.content').scrollIntoView({ 
+                    document.querySelector('.content').scrollIntoView({
                         behavior: 'smooth',
                         block: 'start'
                     });
                 }, 500);
             }
         });
-        
+
         // Close modal when clicking outside
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             const modal = document.getElementById('saveModal');
             if (event.target === modal) {
                 closeSaveModal();
             }
         }
-        
+
         // Add progressive enhancement for better UX
         if ('IntersectionObserver' in window) {
             const observer = new IntersectionObserver((entries) => {
@@ -1179,7 +1217,7 @@
                     }
                 });
             });
-            
+
             // Observe table rows for smooth appearance
             document.querySelectorAll('tbody tr').forEach(row => {
                 row.style.opacity = '0';
@@ -1270,8 +1308,8 @@
         }
 
         /* Improved focus states */
-        .form-control:focus + .form-label,
-        .form-control:not(:placeholder-shown) + .form-label {
+        .form-control:focus+.form-label,
+        .form-control:not(:placeholder-shown)+.form-label {
             color: var(--primary-color);
         }
 
@@ -1304,4 +1342,5 @@
         }
     </style>
 </body>
+
 </html>

@@ -385,21 +385,21 @@
                 </div>
             </div>
             <div class="nav-links">
-                <a href="{{ url_for('dashboard') }}">
+                <a href="{{ url_for('main.dashboard') }}">
                     <span>🏠</span> Dashboard
                 </a>
-                <a href="{{ url_for('tambah_laporan') }}">
+                <a href="{{ url_for('reports.tambah_laporan') }}">
                     <span>➕</span> Tambah Laporan
                 </a>
-                <a href="{{ url_for('statistik') }}">
+                <a href="{{ url_for('main.statistik') }}">
                     <span>📊</span> Statistik
                 </a>
                 {% if current_user.role == 'admin' %}
-                <a href="{{ url_for('users') }}">
+                <a href="{{ url_for('users.users') }}">
                     <span>👥</span> Kelola User
                 </a>
                 {% endif %}
-                <a href="{{ url_for('logout') }}">
+                <a href="{{ url_for('auth.logout') }}">
                     <span>🚪</span> Logout
                 </a>
             </div>

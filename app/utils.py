@@ -81,8 +81,9 @@ def get_file_size(file_path):
 
 def build_search_query(form_data):
     """Build SQLAlchemy query berdasarkan search criteria"""
-    from models import Laporan, User
+    from app.models import Laporan, User
     from sqlalchemy import and_, or_, desc, asc
+    from datetime import datetime, timedelta
     
     query = Laporan.query
     
@@ -121,9 +122,19 @@ def build_search_query(form_data):
     
     if form_data.get('date_to'):
         # Add one day to include the end date
-        from datetime import datetime, timedelta
-        end_date = form_data['date_to'] + timedelta(days=1)
-        query = query.filter(Laporan.tgl_kejadian < end_date)
+        try:
+            date_to_str = form_data['date_to']
+            # Parse string to date if it's a string
+            if isinstance(date_to_str, str):
+                date_to_obj = datetime.strptime(date_to_str, '%Y-%m-%d')
+            else:
+                date_to_obj = date_to_str
+                
+            end_date = date_to_obj + timedelta(days=1)
+            query = query.filter(Laporan.tgl_kejadian < end_date)
+        except Exception as e:
+            current_app.logger.error(f"Date filter error: {e}")
+            pass
     
     # Sorting
     sort_by = form_data.get('sort_by', 'id')
