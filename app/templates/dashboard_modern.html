@@ -1,0 +1,235 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Dashboard - BAP SIMRS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-subtitle">Sistem Pelaporan Kesalahan SIMRS</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon primary">
+                <i data-lucide="file-text"></i>
+            </div>
+        </div>
+        <div class="stat-value">{{ search_stats.total if search_stats else 0 }}</div>
+        <div class="stat-label">Total Laporan</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon warning">
+                <i data-lucide="clock"></i>
+            </div>
+        </div>
+        <div class="stat-value">{{ search_stats.pending if search_stats else 0 }}</div>
+        <div class="stat-label">Pending</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon secondary">
+                <i data-lucide="loader"></i>
+            </div>
+        </div>
+        <div class="stat-value">{{ search_stats.in_progress if search_stats else 0 }}</div>
+        <div class="stat-label">In Progress</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon success">
+                <i data-lucide="check-circle"></i>
+            </div>
+        </div>
+        <div class="stat-value">{{ search_stats.resolved if search_stats else 0 }}</div>
+        <div class="stat-label">Resolved</div>
+    </div>
+</div>
+
+<!-- Filter Bar -->
+<div class="card mb-4" x-data="{ open: false }">
+    <div class="card-header" style="cursor: pointer;" @click="open = !open">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="filter"></i>
+            <span class="card-title">Filter Laporan</span>
+        </div>
+        <i data-lucide="chevron-down" x-bind:style="open ? 'transform: rotate(180deg)' : ''"></i>
+    </div>
+    
+    <div class="card-body" x-show="open" x-transition>
+        <form method="get" action="{{ url_for('main.dashboard') }}">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Unit</label>
+                    <select name="unit_filter" class="form-select">
+                        <option value="">Semua Unit</option>
+                        {% if search_form and search_form.unit_filter.choices %}
+                            {% for value, label in search_form.unit_filter.choices %}
+                                {% if value %}
+                                    <option value="{{ value }}" {% if request.args.get('unit_filter') == value %}selected{% endif %}>{{ label }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Status</label>
+                    <select name="status_filter" class="form-select">
+                        <option value="">Semua Status</option>
+                        <option value="pending" {% if request.args.get('status_filter') == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="in_progress" {% if request.args.get('status_filter') == 'in_progress' %}selected{% endif %}>In Progress</option>
+                        <option value="resolved" {% if request.args.get('status_filter') == 'resolved' %}selected{% endif %}>Resolved</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Jenis Kesalahan</label>
+                    <select name="jenis_filter" class="form-select">
+                        <option value="">Semua Jenis</option>
+                        <option value="Data Pasien" {% if request.args.get('jenis_filter') == 'Data Pasien' %}selected{% endif %}>Data Pasien</option>
+                        <option value="Transaksi" {% if request.args.get('jenis_filter') == 'Transaksi' %}selected{% endif %}>Transaksi</option>
+                        <option value="Sistem Error" {% if request.args.get('jenis_filter') == 'Sistem Error' %}selected{% endif %}>Sistem Error</option>
+                        <option value="Lainnya" {% if request.args.get('jenis_filter') == 'Lainnya' %}selected{% endif %}>Lainnya</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Pencarian</label>
+                    <input type="text" name="search_query" class="form-input" placeholder="Cari..." value="{{ request.args.get('search_query', '') }}">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem;">
+                <button type="submit" class="btn btn-primary">
+                    <i data-lucide="search"></i>
+                    Terapkan Filter
+                </button>
+                <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">
+                    <i data-lucide="x"></i>
+                    Reset
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Data Table -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Daftar Laporan</h3>
+        <a href="{{ url_for('reports.tambah_laporan') }}" class="btn btn-primary">
+            <i data-lucide="plus"></i>
+            Tambah Laporan
+        </a>
+    </div>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Unit</th>
+                    <th>Pelapor</th>
+                    <th>Jenis Kesalahan</th>
+                    <th>Status</th>
+                    <th>Tanggal</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if laporan and laporan.items %}
+                    {% for item in laporan.items %}
+                    <tr>
+                        <td><strong>#{{ item.id }}</strong></td>
+                        <td>{{ item.unit }}</td>
+                        <td>{{ item.pelapor }}</td>
+                        <td>{{ item.jenis_kesalahan }}</td>
+                        <td>
+                            {% if item.status == 'pending' %}
+                                <span class="badge badge-pending">
+                                    <i data-lucide="clock" style="width: 14px; height: 14px;"></i>
+                                    Pending
+                                </span>
+                            {% elif item.status == 'in_progress' %}
+                                <span class="badge badge-progress">
+                                    <i data-lucide="loader" style="width: 14px; height: 14px;"></i>
+                                    In Progress
+                                </span>
+                            {% elif item.status == 'resolved' %}
+                                <span class="badge badge-success">
+                                    <i data-lucide="check-circle" style="width: 14px; height: 14px;"></i>
+                                    Resolved
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>{{ format_datetime(item.created_at) if format_datetime else item.created_at.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <a href="{{ url_for('reports.detail', id=item.id) }}" class="icon-button" title="Detail">
+                                    <i data-lucide="eye"></i>
+                                </a>
+                                <a href="{{ url_for('reports.edit_status', id=item.id) }}" class="icon-button" title="Edit Status">
+                                    <i data-lucide="edit"></i>
+                                </a>
+                                {% if current_user.is_authenticated and current_user.is_admin() %}
+                                <button class="icon-button" style="color: var(--error);" title="Hapus" onclick="if(confirm('Yakin hapus?')) window.location.href='{{ url_for('reports.delete_laporan', id=item.id) }}'">
+                                    <i data-lucide="trash-2"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                            <i data-lucide="inbox" style="width: 48px; height: 48px; margin-bottom: 1rem;"></i>
+                            <p>Belum ada laporan</p>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if laporan and laporan.pages > 1 %}
+    <div class="card-body" style="border-top: 1px solid var(--border);">
+        <div style="display: flex; align-items: center; justify-content: between; gap: 1rem;">
+            <div class="text-muted">
+                Halaman {{ laporan.page }} dari {{ laporan.pages }} ({{ laporan.total }} total)
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                {% if laporan.has_prev %}
+                    <a href="{{ url_for_page(laporan.prev_num) }}" class="btn btn-secondary">
+                        <i data-lucide="chevron-left"></i>
+                        Prev
+                    </a>
+                {% endif %}
+                {% if laporan.has_next %}
+                    <a href="{{ url_for_page(laporan.next_num) }}" class="btn btn-secondary">
+                        Next
+                        <i data-lucide="chevron-right"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Reinitialize icons after page load
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+    });
+</script>
+{% endblock %}

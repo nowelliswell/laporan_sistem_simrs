@@ -75,7 +75,7 @@ def dashboard():
             args['page'] = page
             return url_for('main.dashboard', **args)
             
-        return render_template("dashboard.html", 
+        return render_template("dashboard_modern.html", 
                              laporan=laporan, 
                              format_datetime=format_datetime,
                              search_form=search_form,
