@@ -16,10 +16,25 @@ class LoginForm(FlaskForm):
     ])
 
 class LaporanForm(FlaskForm):
-    unit = StringField('Unit', validators=[
-        DataRequired(message='Unit wajib diisi'),
-        Length(max=100, message='Unit maksimal 100 karakter')
-    ])
+    unit = SelectField('Unit', 
+        choices=[
+            ('IGD', 'IGD (Instalasi Gawat Darurat)'),
+            ('Rawat Inap', 'Rawat Inap'),
+            ('Rawat Jalan', 'Rawat Jalan'),
+            ('ICU', 'ICU (Intensive Care Unit)'),
+            ('NICU', 'NICU (Neonatal ICU)'),
+            ('Kamar Operasi', 'Kamar Operasi'),
+            ('Radiologi', 'Radiologi'),
+            ('Laboratorium', 'Laboratorium'),
+            ('Farmasi', 'Farmasi'),
+            ('Rekam Medis', 'Rekam Medis'),
+            ('Kasir', 'Kasir'),
+            ('Administrasi', 'Administrasi'),
+            ('IT', 'IT / Teknologi Informasi'),
+            ('Lainnya', 'Lainnya')
+        ],
+        validators=[DataRequired(message='Unit wajib dipilih')]
+    )
     pelapor = StringField('Pelapor', validators=[
         DataRequired(message='Nama pelapor wajib diisi'),
         Length(max=100, message='Nama pelapor maksimal 100 karakter')
@@ -62,10 +77,26 @@ class UserForm(FlaskForm):
         Email(message='Format email tidak valid'),
         Length(max=100, message='Email maksimal 100 karakter')
     ])
-    unit = StringField('Unit', validators=[
-        Optional(),
-        Length(max=100, message='Unit maksimal 100 karakter')
-    ])
+    unit = SelectField('Unit', 
+        choices=[
+            ('', 'Pilih Unit (Opsional)'),
+            ('IGD', 'IGD (Instalasi Gawat Darurat)'),
+            ('Rawat Inap', 'Rawat Inap'),
+            ('Rawat Jalan', 'Rawat Jalan'),
+            ('ICU', 'ICU (Intensive Care Unit)'),
+            ('NICU', 'NICU (Neonatal ICU)'),
+            ('Kamar Operasi', 'Kamar Operasi'),
+            ('Radiologi', 'Radiologi'),
+            ('Laboratorium', 'Laboratorium'),
+            ('Farmasi', 'Farmasi'),
+            ('Rekam Medis', 'Rekam Medis'),
+            ('Kasir', 'Kasir'),
+            ('Administrasi', 'Administrasi'),
+            ('IT', 'IT / Teknologi Informasi'),
+            ('Lainnya', 'Lainnya')
+        ],
+        validators=[Optional()]
+    )
     password = PasswordField('Password', validators=[
         DataRequired(message='Password wajib diisi'),
         Length(min=6, message='Password minimal 6 karakter')

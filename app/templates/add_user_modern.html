@@ -47,6 +47,16 @@
                 </div>
 
                 <div class="form-group">
+                    {{ form.unit.label(class="form-label") }}
+                    {{ form.unit(class="form-select") }}
+                    {% if form.unit.errors %}
+                        {% for error in form.unit.errors %}
+                            <div style="color: var(--error); font-size: 12px; margin-top: 0.5rem;">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
                     {{ form.password.label(class="form-label") }}
                     <span style="color: var(--error);">*</span>
                     {{ form.password(class="form-input", placeholder="Minimal 6 karakter") }}

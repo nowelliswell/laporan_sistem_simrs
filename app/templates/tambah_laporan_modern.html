@@ -30,7 +30,7 @@
                     <div class="form-group">
                         {{ form.unit.label(class="form-label") }}
                         <span style="color: var(--error);">*</span>
-                        {{ form.unit(class="form-input", placeholder="Contoh: IGD, Rawat Inap") }}
+                        {{ form.unit(class="form-select") }}
                         {% if form.unit.errors %}
                             {% for error in form.unit.errors %}
                                 <div style="color: var(--error); font-size: 12px; margin-top: 0.5rem;">{{ error }}</div>
