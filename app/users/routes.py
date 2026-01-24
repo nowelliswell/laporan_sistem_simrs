@@ -7,12 +7,13 @@ from app.utils import sanitize_input, format_datetime
 from . import bp
 
 @bp.route("/users")
-@login_required
+# @login_required  # DISABLED for development
 def users():
     """User management - admin only"""
-    if not current_user.is_admin():
-        flash('Akses ditolak. Hanya admin yang dapat mengakses halaman ini.', 'error')
-        return redirect(url_for('main.dashboard'))
+    # DISABLED: Skip admin check for development
+    # if not current_user.is_admin():
+    #     flash('Akses ditolak. Hanya admin yang dapat mengakses halaman ini.', 'error')
+    #     return redirect(url_for('main.dashboard'))
     
     try:
         users = User.query.all()
@@ -23,12 +24,13 @@ def users():
         return redirect(url_for('main.dashboard'))
 
 @bp.route("/add_user", methods=["GET", "POST"])
-@login_required
+# @login_required  # DISABLED for development
 def add_user():
     """Add new user - admin only"""
-    if not current_user.is_admin():
-        flash('Akses ditolak', 'error')
-        return redirect(url_for('main.dashboard'))
+    # DISABLED: Skip admin check for development
+    # if not current_user.is_admin():
+    #     flash('Akses ditolak', 'error')
+    #     return redirect(url_for('main.dashboard'))
     
     form = UserForm()
     

@@ -12,7 +12,7 @@ from . import bp
 # DASHBOARD
 # ======================
 @bp.route("/dashboard")
-@login_required
+# @login_required  # DISABLED for development
 def dashboard():
     try:
         # Get search parameters
@@ -102,7 +102,7 @@ def dashboard():
 # SEARCH & EXPORT ROUTES
 # ======================
 @bp.route("/search", methods=["GET", "POST"])
-@login_required
+# @login_required  # DISABLED for development
 def search():
     form = SearchForm()
     
@@ -138,7 +138,7 @@ def search():
     return render_template("search.html", form=form)
 
 @bp.route("/export")
-@login_required
+# @login_required  # DISABLED for development
 def export_results():
     """Export laporan to CSV or Excel"""
     try:
@@ -230,7 +230,7 @@ def export_results():
         return redirect(url_for('main.dashboard'))
 
 @bp.route("/save_search", methods=["POST"])
-@login_required
+# @login_required  # DISABLED for development
 def save_search():
     """Save search preferences"""
     
@@ -287,7 +287,7 @@ def save_search():
     return redirect(url_for('main.dashboard'))
 
 @bp.route("/load_search/<int:search_id>")
-@login_required
+# @login_required  # DISABLED for development
 def load_search(search_id):
     """Load saved search preferences"""
     
@@ -326,7 +326,7 @@ def load_search(search_id):
         return redirect(url_for('main.dashboard'))
 
 @bp.route("/delete_search/<int:search_id>", methods=["POST"])
-@login_required
+# @login_required  # DISABLED for development
 def delete_search(search_id):
     """Delete saved search preferences"""
     
@@ -350,7 +350,7 @@ def delete_search(search_id):
     return redirect(url_for('main.dashboard'))
 
 @bp.route("/statistik")
-@login_required
+# @login_required  # DISABLED for development
 def statistik():
     try:
         # Get statistics data

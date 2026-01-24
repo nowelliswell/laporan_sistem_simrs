@@ -8,7 +8,7 @@ from app.utils import save_upload_file, delete_upload_file, sanitize_input, form
 from . import bp
 
 @bp.route("/tambah", methods=["GET", "POST"])
-@login_required
+# @login_required  # DISABLED for development
 def tambah_laporan():
     form = LaporanForm()
     
@@ -49,7 +49,7 @@ def tambah_laporan():
     return render_template("tambah_laporan_modern.html", form=form)
 
 @bp.route("/detail/<int:id>")
-@login_required
+# @login_required  # DISABLED for development
 def detail(id):
     try:
         laporan = Laporan.query.get_or_404(id)
@@ -60,7 +60,7 @@ def detail(id):
         return redirect(url_for('main.dashboard'))
 
 @bp.route("/edit_status/<int:id>", methods=["GET", "POST"])
-@login_required
+# @login_required  # DISABLED for development
 def edit_status(id):
     """Edit status laporan - accessible by all authenticated users"""
     try:
@@ -101,12 +101,13 @@ def edit_status(id):
         return redirect(url_for('reports.detail', id=id))
 
 @bp.route("/delete_laporan/<int:id>", methods=["POST", "GET"])
-@login_required
+# @login_required  # DISABLED for development
 def delete_laporan(id):
     """Delete laporan - only admin can delete"""
-    if not current_user.is_admin():
-        flash('Akses ditolak. Hanya admin yang dapat menghapus laporan.', 'error')
-        return redirect(url_for('reports.detail', id=id))
+    # DISABLED: Skip admin check for development
+    # if not current_user.is_admin():
+    #     flash('Akses ditolak. Hanya admin yang dapat menghapus laporan.', 'error')
+    #     return redirect(url_for('reports.detail', id=id))
     
     try:
         laporan = Laporan.query.get_or_404(id)

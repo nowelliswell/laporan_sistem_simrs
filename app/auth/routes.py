@@ -9,7 +9,12 @@ from . import bp
 
 @bp.route("/", methods=["GET", "POST"])
 def login():
-    """Login page - entry point of the application"""
+    """Login page - DISABLED for development"""
+    # Bypass login - redirect directly to dashboard
+    return redirect(url_for("main.dashboard"))
+    
+    # Original login code (disabled)
+    """
     if current_user.is_authenticated:
         return redirect(url_for("main.dashboard"))
     
@@ -43,11 +48,18 @@ def login():
             flash('Terjadi kesalahan saat login', 'error')
     
     return render_template("login_modern.html", form=form)
+    """
 
 @bp.route("/logout")
-@login_required
+# @login_required  # DISABLED for development
 def logout():
+    # DISABLED: Just redirect to dashboard
+    return redirect(url_for("auth.login"))
+    
+    # Original logout code (disabled)
+    """
     current_app.logger.info(f'User {current_user.username} logged out')
     logout_user()
     flash('Anda telah logout', 'info')
     return redirect(url_for("auth.login"))
+    """
