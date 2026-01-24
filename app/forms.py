@@ -96,7 +96,7 @@ class EditStatusForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(EditStatusForm, self).__init__(*args, **kwargs)
         # Populate assigned_to choices with users
-        from models import User
+        from app.models import User
         self.assigned_to.choices = [(0, 'Tidak ada')] + [(u.id, u.username) for u in User.query.all()]
 
 class SearchForm(FlaskForm):
