@@ -8,7 +8,7 @@ from app.utils import save_upload_file, delete_upload_file, sanitize_input, form
 from . import bp
 
 @bp.route("/tambah", methods=["GET", "POST"])
-# @login_required  # TEMPORARY: Login disabled for testing
+@login_required
 def tambah_laporan():
     form = LaporanForm()
     
@@ -30,15 +30,14 @@ def tambah_laporan():
                 deskripsi=sanitize_input(form.deskripsi.data),
                 tgl_kejadian=form.tgl_kejadian.data,
                 bukti_file=filename,
-                created_by=current_user.id if current_user.is_authenticated else None  # TEMPORARY FIX
+                created_by=current_user.id
             )
             
             db.session.add(laporan)
             db.session.commit()
             
             flash('Laporan berhasil ditambahkan', 'success')
-            username = current_user.username if current_user.is_authenticated else 'anonymous'  # TEMPORARY FIX
-            current_app.logger.info(f'New report created by {username}: {laporan.id}')
+            current_app.logger.info(f'New report created by {current_user.username}: {laporan.id}')
             # Redirect to main dashboard
             return redirect(url_for("main.dashboard"))
             
@@ -50,7 +49,7 @@ def tambah_laporan():
     return render_template("tambah_laporan.html", form=form)
 
 @bp.route("/detail/<int:id>")
-# @login_required  # TEMPORARY: Login disabled for testing
+@login_required
 def detail(id):
     try:
         laporan = Laporan.query.get_or_404(id)
@@ -61,13 +60,9 @@ def detail(id):
         return redirect(url_for('main.dashboard'))
 
 @bp.route("/edit_status/<int:id>", methods=["GET", "POST"])
-# @login_required  # TEMPORARY: Login disabled for testing
+@login_required
 def edit_status(id):
-    # TEMPORARY FIX: Skip admin check when login disabled
-    # if not current_user.is_admin():
-    #     flash('Akses ditolak. Hanya admin yang dapat mengedit status laporan.', 'error')
-    #     return redirect(url_for('reports.detail', id=id))
-    
+    """Edit status laporan - accessible by all authenticated users"""
     try:
         laporan = Laporan.query.get_or_404(id)
         form = EditStatusForm()
@@ -76,11 +71,12 @@ def edit_status(id):
             # Update status
             laporan.status = form.status.data
             
-            # Update assigned_to
-            if form.assigned_to.data and form.assigned_to.data != 0:
-                laporan.assigned_to = form.assigned_to.data
-            else:
-                laporan.assigned_to = None
+            # Only admin can assign to other users
+            if current_user.is_authenticated and current_user.is_admin():
+                if form.assigned_to.data and form.assigned_to.data != 0:
+                    laporan.assigned_to = form.assigned_to.data
+                else:
+                    laporan.assigned_to = None
             
             # Update timestamp
             laporan.updated_at = datetime.utcnow()
@@ -88,14 +84,14 @@ def edit_status(id):
             db.session.commit()
             
             flash('Status laporan berhasil diupdate', 'success')
-            username = current_user.username if current_user.is_authenticated else 'anonymous'  # TEMPORARY FIX
-            current_app.logger.info(f'Report {id} status updated by {username}: {laporan.status}')
+            current_app.logger.info(f'Report {id} status updated by {current_user.username}: {laporan.status}')
             return redirect(url_for('reports.detail', id=id))
         
         # Pre-populate form with current values
         if request.method == 'GET':
             form.status.data = laporan.status
-            form.assigned_to.data = laporan.assigned_to if laporan.assigned_to else 0
+            if current_user.is_authenticated and current_user.is_admin():
+                form.assigned_to.data = laporan.assigned_to if laporan.assigned_to else 0
         
         return render_template("edit_status.html", form=form, laporan=laporan, format_datetime=format_datetime)
         
@@ -105,12 +101,12 @@ def edit_status(id):
         return redirect(url_for('reports.detail', id=id))
 
 @bp.route("/delete_laporan/<int:id>", methods=["POST", "GET"])
-# @login_required  # TEMPORARY: Login disabled for testing
+@login_required
 def delete_laporan(id):
-    # TEMPORARY FIX: Skip admin check when login disabled
-    # if not current_user.is_admin():
-    #     flash('Akses ditolak. Hanya admin yang dapat menghapus laporan.', 'error')
-    #     return redirect(url_for('reports.detail', id=id))
+    """Delete laporan - only admin can delete"""
+    if not current_user.is_admin():
+        flash('Akses ditolak. Hanya admin yang dapat menghapus laporan.', 'error')
+        return redirect(url_for('reports.detail', id=id))
     
     try:
         laporan = Laporan.query.get_or_404(id)
@@ -124,8 +120,7 @@ def delete_laporan(id):
         db.session.commit()
         
         flash('Laporan berhasil dihapus', 'success')
-        username = current_user.username if current_user.is_authenticated else 'anonymous'  # TEMPORARY FIX
-        current_app.logger.info(f'Report {id} deleted by {username}')
+        current_app.logger.info(f'Report {id} deleted by {current_user.username}')
         return redirect(url_for('main.dashboard'))
         
     except Exception as e:

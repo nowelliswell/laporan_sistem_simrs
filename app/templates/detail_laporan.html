@@ -138,10 +138,12 @@
                 <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">
                     <span>←</span> Kembali ke Dashboard
                 </a>
-                {% if current_user.is_authenticated and current_user.is_admin() %}
+                {% if current_user.is_authenticated %}
                 <a href="{{ url_for('reports.edit_status', id=laporan.id) }}" class="btn btn-primary">
                     <span>✏️</span> Edit Status
                 </a>
+                {% endif %}
+                {% if current_user.is_authenticated and current_user.is_admin() %}
                 <a href="{{ url_for('reports.delete_laporan', id=laporan.id) }}" class="btn btn-danger"
                     onclick="return confirm('Apakah Anda yakin ingin menghapus laporan ini?')">
                     <span>🗑️</span> Hapus Laporan

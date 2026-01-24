@@ -12,7 +12,7 @@ from . import bp
 # DASHBOARD
 # ======================
 @bp.route("/dashboard")
-# @login_required  # TEMPORARY: Login disabled for testing
+@login_required
 def dashboard():
     try:
         # Get search parameters
@@ -297,7 +297,7 @@ def delete_search(search_id):
     return redirect(url_for('main.dashboard'))
 
 @bp.route("/statistik")
-# @login_required  # TEMPORARY: Login disabled for testing
+@login_required
 def statistik():
     try:
         # Get statistics data
