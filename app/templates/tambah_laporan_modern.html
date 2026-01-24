@@ -99,28 +99,38 @@
             <form method="post" enctype="multipart/form-data" novalidate>
                 {{ form.hidden_tag() }}
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                    <div class="form-group">
-                        {{ form.unit.label(class="form-label") }}
-                        <span style="color: var(--error);">*</span>
-                        {{ form.unit(class="form-select") }}
-                        {% if form.unit.errors %}
-                            {% for error in form.unit.errors %}
-                                <div style="color: var(--error); font-size: 12px; margin-top: 0.5rem;">{{ error }}</div>
-                            {% endfor %}
-                        {% endif %}
+                <div class="form-group">
+                    {{ form.unit.label(class="form-label") }}
+                    <span style="color: var(--error);">*</span>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.75rem; margin-top: 0.75rem;">
+                        {% for value, label in form.unit.choices %}
+                        <label class="radio-card">
+                            <input type="radio" name="unit" value="{{ value }}" {% if form.unit.data == value %}checked{% endif %} required>
+                            <div class="radio-card-content">
+                                <span class="radio-card-label">{{ label }}</span>
+                                <div class="radio-card-check">
+                                    <i data-lucide="check"></i>
+                                </div>
+                            </div>
+                        </label>
+                        {% endfor %}
                     </div>
+                    {% if form.unit.errors %}
+                        {% for error in form.unit.errors %}
+                            <div style="color: var(--error); font-size: 12px; margin-top: 0.5rem;">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
 
-                    <div class="form-group">
-                        {{ form.pelapor.label(class="form-label") }}
-                        <span style="color: var(--error);">*</span>
-                        {{ form.pelapor(class="form-input", placeholder="Nama lengkap pelapor") }}
-                        {% if form.pelapor.errors %}
-                            {% for error in form.pelapor.errors %}
-                                <div style="color: var(--error); font-size: 12px; margin-top: 0.5rem;">{{ error }}</div>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
+                <div class="form-group">
+                    {{ form.pelapor.label(class="form-label") }}
+                    <span style="color: var(--error);">*</span>
+                    {{ form.pelapor(class="form-input", placeholder="Nama lengkap pelapor") }}
+                    {% if form.pelapor.errors %}
+                        {% for error in form.pelapor.errors %}
+                            <div style="color: var(--error); font-size: 12px; margin-top: 0.5rem;">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
 
                 <div class="form-group">
@@ -231,6 +241,7 @@
                 <div style="font-size: 13px; line-height: 1.8; color: var(--text-secondary);">
                     <p style="margin-bottom: 1rem;"><strong style="color: var(--text-primary);">Tips Membuat Laporan:</strong></p>
                     <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li style="margin-bottom: 0.5rem;">Pilih unit dan modul yang sesuai</li>
                         <li style="margin-bottom: 0.5rem;">Jelaskan masalah secara detail dan spesifik</li>
                         <li style="margin-bottom: 0.5rem;">Sertakan langkah-langkah terjadinya error</li>
                         <li style="margin-bottom: 0.5rem;">Upload screenshot jika memungkinkan</li>
@@ -244,46 +255,26 @@
             <div class="card-header">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                     <i data-lucide="info"></i>
-                    <h3 class="card-title">Modul SIMRS</h3>
+                    <h3 class="card-title">Jenis Kesalahan</h3>
                 </div>
             </div>
             <div class="card-body">
                 <div style="font-size: 12px; line-height: 1.8; color: var(--text-secondary);">
                     <div style="margin-bottom: 0.75rem;">
-                        <strong style="color: var(--text-primary);">📋 Pendaftaran:</strong>
-                        <div>Registrasi pasien, antrian, jadwal dokter</div>
+                        <strong style="color: var(--text-primary);">📊 Data Pasien:</strong>
+                        <div>Kesalahan data pasien, registrasi, rekam medis</div>
                     </div>
                     <div style="margin-bottom: 0.75rem;">
-                        <strong style="color: var(--text-primary);">🏥 Administrasi:</strong>
-                        <div>Data pasien, rawat jalan/inap, status kamar</div>
+                        <strong style="color: var(--text-primary);">💰 Transaksi:</strong>
+                        <div>Masalah pembayaran, billing, keuangan</div>
                     </div>
                     <div style="margin-bottom: 0.75rem;">
-                        <strong style="color: var(--text-primary);">📝 Rekam Medis:</strong>
-                        <div>RME/EMR, riwayat diagnosa, dokumentasi klinis</div>
-                    </div>
-                    <div style="margin-bottom: 0.75rem;">
-                        <strong style="color: var(--text-primary);">🧪 Penunjang Medis:</strong>
-                        <div>Lab, radiologi, fisioterapi, diagnostik</div>
-                    </div>
-                    <div style="margin-bottom: 0.75rem;">
-                        <strong style="color: var(--text-primary);">💊 Farmasi:</strong>
-                        <div>Resep, stok obat, distribusi</div>
-                    </div>
-                    <div style="margin-bottom: 0.75rem;">
-                        <strong style="color: var(--text-primary);">💳 Keuangan:</strong>
-                        <div>Billing, pembayaran, klaim BPJS</div>
-                    </div>
-                    <div style="margin-bottom: 0.75rem;">
-                        <strong style="color: var(--text-primary);">📦 Inventaris:</strong>
-                        <div>Stok alat medis, aset rumah sakit</div>
-                    </div>
-                    <div style="margin-bottom: 0.75rem;">
-                        <strong style="color: var(--text-primary);">👥 SDM:</strong>
-                        <div>Data tenaga kesehatan, jadwal, absensi</div>
+                        <strong style="color: var(--text-primary);">⚠️ Sistem Error:</strong>
+                        <div>Error teknis, crash, bug sistem</div>
                     </div>
                     <div>
-                        <strong style="color: var(--text-primary);">📊 Laporan:</strong>
-                        <div>Statistik, pelaporan ke Kemenkes</div>
+                        <strong style="color: var(--text-primary);">📌 Lainnya:</strong>
+                        <div>Masalah lain di luar kategori</div>
                     </div>
                 </div>
             </div>

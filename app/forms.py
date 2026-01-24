@@ -16,22 +16,22 @@ class LoginForm(FlaskForm):
     ])
 
 class LaporanForm(FlaskForm):
-    unit = SelectField('Unit', 
+    unit = RadioField('Unit', 
         choices=[
-            ('IGD', 'IGD (Instalasi Gawat Darurat)'),
-            ('Rawat Inap', 'Rawat Inap'),
-            ('Rawat Jalan', 'Rawat Jalan'),
-            ('ICU', 'ICU (Intensive Care Unit)'),
-            ('NICU', 'NICU (Neonatal ICU)'),
-            ('Kamar Operasi', 'Kamar Operasi'),
-            ('Radiologi', 'Radiologi'),
-            ('Laboratorium', 'Laboratorium'),
-            ('Farmasi', 'Farmasi'),
-            ('Rekam Medis', 'Rekam Medis'),
-            ('Kasir', 'Kasir'),
-            ('Administrasi', 'Administrasi'),
-            ('IT', 'IT / Teknologi Informasi'),
-            ('Lainnya', 'Lainnya')
+            ('IGD', '🚑 IGD (Instalasi Gawat Darurat)'),
+            ('Rawat Inap', '🛏️ Rawat Inap'),
+            ('Rawat Jalan', '🏥 Rawat Jalan'),
+            ('ICU', '🏨 ICU (Intensive Care Unit)'),
+            ('NICU', '👶 NICU (Neonatal ICU)'),
+            ('Kamar Operasi', '⚕️ Kamar Operasi'),
+            ('Radiologi', '📷 Radiologi'),
+            ('Laboratorium', '🔬 Laboratorium'),
+            ('Farmasi', '💊 Farmasi'),
+            ('Rekam Medis', '📋 Rekam Medis'),
+            ('Kasir', '💳 Kasir'),
+            ('Administrasi', '📝 Administrasi'),
+            ('IT', '💻 IT / Teknologi Informasi'),
+            ('Lainnya', '📌 Lainnya')
         ],
         validators=[DataRequired(message='Unit wajib dipilih')]
     )
@@ -43,10 +43,10 @@ class LaporanForm(FlaskForm):
         choices=[
             ('Pendaftaran & Front Office', '📋 Pendaftaran & Front Office'),
             ('Administrasi Pasien', '🏥 Administrasi Pasien'),
-            ('Rekam Medis Elektronik (RME/EMR)', '📝 Rekam Medis Elektronik (RME/EMR)'),
-            ('Penunjang Medis', '🧪 Penunjang Medis (Lab, Radiologi, Fisioterapi)'),
+            ('Rekam Medis Elektronik (RME/EMR)', '📄 Rekam Medis Elektronik (RME/EMR)'),
+            ('Penunjang Medis', '🔬 Penunjang Medis (Lab, Radiologi, Fisioterapi)'),
             ('Farmasi', '💊 Farmasi'),
-            ('Keuangan / Billing', '💳 Keuangan / Billing'),
+            ('Keuangan / Billing', '💰 Keuangan / Billing'),
             ('Manajemen Inventaris & Aset', '📦 Manajemen Inventaris & Aset'),
             ('Sumber Daya Manusia (SDM)', '👥 Sumber Daya Manusia (SDM)'),
             ('Laporan & Pelaporan', '📊 Laporan & Pelaporan')
