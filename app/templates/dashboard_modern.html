@@ -143,7 +143,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% if laporan and laporan.items %}
+                {% if laporan and laporan.items and laporan.items|length > 0 %}
                     {% for item in laporan.items %}
                     <tr>
                         <td><strong>#{{ item.id }}</strong></td>
@@ -168,7 +168,7 @@
                                 </span>
                             {% endif %}
                         </td>
-                        <td>{{ format_datetime(item.created_at) if format_datetime else item.created_at.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ format_datetime(item.created_at) if format_datetime else item.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
                         <td>
                             <div style="display: flex; gap: 0.5rem;">
                                 <a href="{{ url_for('reports.detail', id=item.id) }}" class="icon-button" title="Detail">
@@ -189,8 +189,10 @@
                 {% else %}
                     <tr>
                         <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
-                            <i data-lucide="inbox" style="width: 48px; height: 48px; margin-bottom: 1rem;"></i>
-                            <p>Belum ada laporan</p>
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                                <i data-lucide="inbox" style="width: 48px; height: 48px;"></i>
+                                <p style="margin: 0;">Belum ada laporan</p>
+                            </div>
                         </td>
                     </tr>
                 {% endif %}
@@ -201,19 +203,19 @@
     <!-- Pagination -->
     {% if laporan and laporan.pages > 1 %}
     <div class="card-body" style="border-top: 1px solid var(--border);">
-        <div style="display: flex; align-items: center; justify-content: between; gap: 1rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
             <div class="text-muted">
                 Halaman {{ laporan.page }} dari {{ laporan.pages }} ({{ laporan.total }} total)
             </div>
             <div style="display: flex; gap: 0.5rem;">
                 {% if laporan.has_prev %}
-                    <a href="{{ url_for_page(laporan.prev_num) }}" class="btn btn-secondary">
+                    <a href="{{ url_for_page(laporan.prev_num) if url_for_page else url_for('main.dashboard', page=laporan.prev_num) }}" class="btn btn-secondary">
                         <i data-lucide="chevron-left"></i>
                         Prev
                     </a>
                 {% endif %}
                 {% if laporan.has_next %}
-                    <a href="{{ url_for_page(laporan.next_num) }}" class="btn btn-secondary">
+                    <a href="{{ url_for_page(laporan.next_num) if url_for_page else url_for('main.dashboard', page=laporan.next_num) }}" class="btn btn-secondary">
                         Next
                         <i data-lucide="chevron-right"></i>
                     </a>

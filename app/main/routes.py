@@ -90,7 +90,7 @@ def dashboard():
         # Create empty pagination object
         from flask_sqlalchemy import Pagination
         empty_pagination = Laporan.query.filter(Laporan.id == -1).paginate(page=1, per_page=10, error_out=False)
-        return render_template("dashboard.html", 
+        return render_template("dashboard_modern.html", 
                              laporan=empty_pagination, 
                              search_form=search_form,
                              search_stats={'total': 0, 'pending': 0, 'in_progress': 0, 'resolved': 0},
