@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed, FileSize
-from wtforms import StringField, TextAreaField, SelectField, DateTimeLocalField, PasswordField
+from wtforms import StringField, TextAreaField, SelectField, DateTimeLocalField, PasswordField, RadioField
 from wtforms.fields import DateField
 from wtforms.validators import DataRequired, Length, Email, Optional
 from config import Config
@@ -39,10 +39,20 @@ class LaporanForm(FlaskForm):
         DataRequired(message='Nama pelapor wajib diisi'),
         Length(max=100, message='Nama pelapor maksimal 100 karakter')
     ])
-    modul_simrs = StringField('Modul SIMRS', validators=[
-        Optional(),
-        Length(max=100, message='Modul SIMRS maksimal 100 karakter')
-    ])
+    modul_simrs = RadioField('Modul SIMRS', 
+        choices=[
+            ('Pendaftaran & Front Office', '📋 Pendaftaran & Front Office'),
+            ('Administrasi Pasien', '🏥 Administrasi Pasien'),
+            ('Rekam Medis Elektronik (RME/EMR)', '📝 Rekam Medis Elektronik (RME/EMR)'),
+            ('Penunjang Medis', '🧪 Penunjang Medis (Lab, Radiologi, Fisioterapi)'),
+            ('Farmasi', '💊 Farmasi'),
+            ('Keuangan / Billing', '💳 Keuangan / Billing'),
+            ('Manajemen Inventaris & Aset', '📦 Manajemen Inventaris & Aset'),
+            ('Sumber Daya Manusia (SDM)', '👥 Sumber Daya Manusia (SDM)'),
+            ('Laporan & Pelaporan', '📊 Laporan & Pelaporan')
+        ],
+        validators=[DataRequired(message='Modul SIMRS wajib dipilih')]
+    )
     jenis_kesalahan = SelectField('Jenis Kesalahan', 
         choices=[
             ('Data Pasien', 'Data Pasien'),
