@@ -394,7 +394,8 @@
         }
 
         .btn-secondary:hover {
-            background: white;
+            background: var(--card);
+            border-color: var(--primary);
         }
 
         .btn-success {
@@ -614,6 +615,12 @@
             border-left: 4px solid;
             animation: slideIn 0.3s ease-out;
         }
+        
+        .toast i {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
 
         @keyframes slideIn {
             from {
@@ -714,20 +721,20 @@
             </div>
             
             <nav class="sidebar-nav">
-                <a href="{{ url_for('main.dashboard') }}" class="nav-item {% if request.endpoint == 'main.dashboard' %}active{% endif %}">
+                <a href="{{ url_for('main.dashboard') }}" class="nav-item {% if request.endpoint == 'main.dashboard' %}active{% endif %}" @click="mobileMenuOpen = false">
                     <i data-lucide="layout-dashboard"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="{{ url_for('reports.tambah_laporan') }}" class="nav-item {% if request.endpoint == 'reports.tambah_laporan' %}active{% endif %}">
+                <a href="{{ url_for('reports.tambah_laporan') }}" class="nav-item {% if request.endpoint == 'reports.tambah_laporan' %}active{% endif %}" @click="mobileMenuOpen = false">
                     <i data-lucide="plus-circle"></i>
                     <span>Tambah Laporan</span>
                 </a>
-                <a href="{{ url_for('main.statistik') }}" class="nav-item {% if request.endpoint == 'main.statistik' %}active{% endif %}">
+                <a href="{{ url_for('main.statistik') }}" class="nav-item {% if request.endpoint == 'main.statistik' %}active{% endif %}" @click="mobileMenuOpen = false">
                     <i data-lucide="bar-chart-3"></i>
                     <span>Statistik</span>
                 </a>
                 {% if current_user.is_authenticated and current_user.is_admin() %}
-                <a href="{{ url_for('users.users') }}" class="nav-item {% if request.endpoint == 'users.users' %}active{% endif %}">
+                <a href="{{ url_for('users.users') }}" class="nav-item {% if request.endpoint == 'users.users' %}active{% endif %}" @click="mobileMenuOpen = false">
                     <i data-lucide="users"></i>
                     <span>Kelola User</span>
                 </a>
@@ -813,7 +820,7 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    showToast('{{ message }}', '{{ category if category in ["success", "error", "info"] else "info" }}');
+                    showToast({{ message|tojson }}, {{ (category if category in ["success", "error", "info"] else "info")|tojson }});
                 {% endfor %}
             {% endif %}
         {% endwith %}
