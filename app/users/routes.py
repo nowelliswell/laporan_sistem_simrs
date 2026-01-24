@@ -16,7 +16,7 @@ def users():
     
     try:
         users = User.query.all()
-        return render_template("users.html", users=users, format_datetime=format_datetime)
+        return render_template("users_modern.html", users=users, format_datetime=format_datetime)
     except Exception as e:
         current_app.logger.error(f'Error loading users: {str(e)}')
         flash('Terjadi kesalahan saat memuat data user', 'error')
@@ -38,7 +38,7 @@ def add_user():
             existing_user = User.query.filter_by(username=form.username.data).first()
             if existing_user:
                 flash('Username sudah digunakan', 'error')
-                return render_template("add_user.html", form=form)
+                return render_template("add_user_modern.html", form=form)
             
             user = User(
                 username=sanitize_input(form.username.data),
@@ -61,4 +61,4 @@ def add_user():
             current_app.logger.error(f'Error creating user: {str(e)}')
             flash('Terjadi kesalahan saat membuat user', 'error')
     
-    return render_template("add_user.html", form=form)
+    return render_template("add_user_modern.html", form=form)

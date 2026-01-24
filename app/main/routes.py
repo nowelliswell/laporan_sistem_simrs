@@ -315,7 +315,7 @@ def statistik():
             'recent_reports': recent_reports
         }
         
-        return render_template("statistik.html", stats=stats_data, format_datetime=format_datetime)
+        return render_template("statistik_modern.html", stats=stats_data, format_datetime=format_datetime)
         
     except Exception as e:
         current_app.logger.error(f'Error loading statistics: {str(e)}')

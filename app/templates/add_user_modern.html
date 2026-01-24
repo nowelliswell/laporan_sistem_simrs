@@ -1,0 +1,109 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Tambah User - BAP SIMRS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+        <a href="{{ url_for('users.users') }}" class="icon-button">
+            <i data-lucide="arrow-left"></i>
+        </a>
+        <h1 class="page-title">Tambah User Baru</h1>
+    </div>
+    <p class="page-subtitle">Buat akun user baru untuk sistem</p>
+</div>
+
+<div style="max-width: 600px;">
+    <div class="card">
+        <div class="card-header">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <i data-lucide="user-plus"></i>
+                <h3 class="card-title">Form User Baru</h3>
+            </div>
+        </div>
+        <div class="card-body">
+            <form method="post" novalidate>
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group">
+                    {{ form.username.label(class="form-label") }}
+                    <span style="color: var(--error);">*</span>
+                    {{ form.username(class="form-input", placeholder="Username untuk login") }}
+                    {% if form.username.errors %}
+                        {% for error in form.username.errors %}
+                            <div style="color: var(--error); font-size: 12px; margin-top: 0.5rem;">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.email.label(class="form-label") }}
+                    {{ form.email(class="form-input", placeholder="email@example.com", type="email") }}
+                    {% if form.email.errors %}
+                        {% for error in form.email.errors %}
+                            <div style="color: var(--error); font-size: 12px; margin-top: 0.5rem;">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.password.label(class="form-label") }}
+                    <span style="color: var(--error);">*</span>
+                    {{ form.password(class="form-input", placeholder="Minimal 6 karakter") }}
+                    {% if form.password.errors %}
+                        {% for error in form.password.errors %}
+                            <div style="color: var(--error); font-size: 12px; margin-top: 0.5rem;">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 0.5rem;">
+                        Password minimal 6 karakter
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{ form.role.label(class="form-label") }}
+                    <span style="color: var(--error);">*</span>
+                    {{ form.role(class="form-select") }}
+                    {% if form.role.errors %}
+                        {% for error in form.role.errors %}
+                            <div style="color: var(--error); font-size: 12px; margin-top: 0.5rem;">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <div style="margin-top: 1rem; padding: 1rem; background: var(--background); border-radius: var(--radius-md); font-size: 13px;">
+                        <div style="font-weight: 600; margin-bottom: 0.75rem; color: var(--text-primary);">
+                            <i data-lucide="info" style="width: 16px; height: 16px;"></i>
+                            Perbedaan Role
+                        </div>
+                        <div style="color: var(--text-secondary); line-height: 1.8;">
+                            <div style="margin-bottom: 0.5rem;">
+                                <strong style="color: var(--error);">Administrator:</strong> Full access, bisa kelola user, hapus laporan, assign task
+                            </div>
+                            <div>
+                                <strong style="color: var(--secondary);">User:</strong> Bisa buat dan edit status laporan sendiri
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 0.75rem; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary">
+                        <i data-lucide="save"></i>
+                        Simpan User
+                    </button>
+                    <a href="{{ url_for('users.users') }}" class="btn btn-secondary">
+                        <i data-lucide="x"></i>
+                        Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    lucide.createIcons();
+</script>
+{% endblock %}

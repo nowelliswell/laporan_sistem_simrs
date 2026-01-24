@@ -19,7 +19,7 @@ def tambah_laporan():
             if form.bukti_file.data:
                 filename = save_upload_file(form.bukti_file.data)
                 if not filename:
-                    return render_template("tambah_laporan.html", form=form)
+                    return render_template("tambah_laporan_modern.html", form=form)
             
             # Create laporan
             laporan = Laporan(
@@ -46,7 +46,7 @@ def tambah_laporan():
             current_app.logger.error(f'Error creating report: {str(e)}')
             flash('Terjadi kesalahan saat menyimpan laporan', 'error')
     
-    return render_template("tambah_laporan.html", form=form)
+    return render_template("tambah_laporan_modern.html", form=form)
 
 @bp.route("/detail/<int:id>")
 @login_required

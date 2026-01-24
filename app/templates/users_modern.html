@@ -1,0 +1,128 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Kelola User - BAP SIMRS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Kelola User</h1>
+        <p class="page-subtitle">Manajemen user dan role sistem</p>
+    </div>
+    <a href="{{ url_for('users.add_user') }}" class="btn btn-primary">
+        <i data-lucide="user-plus"></i>
+        Tambah User
+    </a>
+</div>
+
+<!-- User Stats -->
+<div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 2rem;">
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon primary">
+                <i data-lucide="users"></i>
+            </div>
+        </div>
+        <div class="stat-value">{{ users|length }}</div>
+        <div class="stat-label">Total User</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon warning">
+                <i data-lucide="shield"></i>
+            </div>
+        </div>
+        <div class="stat-value">{{ users|selectattr('role', 'equalto', 'admin')|list|length }}</div>
+        <div class="stat-label">Administrator</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon success">
+                <i data-lucide="user-check"></i>
+            </div>
+        </div>
+        <div class="stat-value">{{ users|selectattr('is_active', 'equalto', true)|list|length }}</div>
+        <div class="stat-label">Active User</div>
+    </div>
+</div>
+
+<!-- User Table -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Daftar User</h3>
+    </div>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Last Login</th>
+                    <th>Dibuat</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <div class="user-avatar" style="width: 36px; height: 36px;">
+                                {{ user.username[0].upper() }}
+                            </div>
+                            <div>
+                                <div style="font-weight: 600; color: var(--text-primary);">{{ user.username }}</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">ID: {{ user.id }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ user.email if user.email else '-' }}</td>
+                    <td>
+                        {% if user.role == 'admin' %}
+                            <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #DC2626;">
+                                <i data-lucide="shield" style="width: 14px; height: 14px;"></i>
+                                Admin
+                            </span>
+                        {% else %}
+                            <span class="badge" style="background: rgba(6, 182, 212, 0.1); color: #0891B2;">
+                                <i data-lucide="user" style="width: 14px; height: 14px;"></i>
+                                User
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.is_active %}
+                            <span class="badge badge-success">
+                                <i data-lucide="check-circle" style="width: 14px; height: 14px;"></i>
+                                Active
+                            </span>
+                        {% else %}
+                            <span class="badge" style="background: rgba(100, 116, 139, 0.1); color: #64748B;">
+                                <i data-lucide="x-circle" style="width: 14px; height: 14px;"></i>
+                                Inactive
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.last_login %}
+                            {{ user.last_login.strftime('%d/%m/%Y %H:%M') }}
+                        {% else %}
+                            <span style="color: var(--text-secondary);">Belum pernah</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ user.created_at.strftime('%d/%m/%Y') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    lucide.createIcons();
+</script>
+{% endblock %}
