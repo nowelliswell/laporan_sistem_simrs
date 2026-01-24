@@ -22,7 +22,7 @@ def create_app(config_class=Config):
     # Setup Login Manager
     login_manager = LoginManager()
     login_manager.init_app(app)
-    # login_manager.login_view = 'auth.login'  # TEMPORARY: Login disabled for testing
+    login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Silakan login untuk mengakses halaman ini.'
     login_manager.login_message_category = 'info'
     

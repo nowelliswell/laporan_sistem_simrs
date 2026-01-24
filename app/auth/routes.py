@@ -9,11 +9,7 @@ from . import bp
 
 @bp.route("/", methods=["GET", "POST"])
 def login():
-    # TEMPORARY: Redirect directly to dashboard (login disabled for testing)
-    return redirect(url_for("main.dashboard"))
-    
-    # Original login code (commented out for testing)
-    """
+    """Login page - entry point of the application"""
     if current_user.is_authenticated:
         return redirect(url_for("main.dashboard"))
     
@@ -33,9 +29,10 @@ def login():
                 
                 login_user(user, remember=True, duration=timedelta(hours=1))
                 flash(f'Selamat datang, {user.username}!', 'success')
+                current_app.logger.info(f'User {username} logged in successfully')
                 
                 next_page = request.args.get('next')
-                # Ensure next_page is safe or belongs to app, but standard simple check ok for now
+                # Ensure next_page is safe or belongs to app
                 return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
             else:
                 flash('Username atau password salah', 'error')
@@ -46,7 +43,6 @@ def login():
             flash('Terjadi kesalahan saat login', 'error')
     
     return render_template("login.html", form=form)
-    """
 
 @bp.route("/logout")
 @login_required

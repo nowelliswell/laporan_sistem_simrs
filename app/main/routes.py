@@ -102,7 +102,7 @@ def dashboard():
 # SEARCH & EXPORT ROUTES
 # ======================
 @bp.route("/search", methods=["GET", "POST"])
-# @login_required  # TEMPORARY: Login disabled for testing
+@login_required
 def search():
     form = SearchForm()
     
@@ -138,7 +138,7 @@ def search():
     return render_template("search.html", form=form)
 
 @bp.route("/export")
-# @login_required  # TEMPORARY: Login disabled for testing
+@login_required
 def export_results():
     try:
         # Build query based on current search parameters
@@ -168,12 +168,9 @@ def export_results():
         return redirect(url_for('main.dashboard'))
 
 @bp.route("/save_search", methods=["POST"])
-# @login_required  # TEMPORARY: Login disabled for testing
+@login_required
 def save_search():
-    # TEMPORARY FIX: Redirect if not authenticated
-    if not current_user.is_authenticated:
-        flash('Fitur save search memerlukan login', 'info')
-        return redirect(url_for('main.dashboard'))
+    """Save search preferences"""
     
     form = SaveSearchForm()
     
@@ -228,12 +225,9 @@ def save_search():
     return redirect(url_for('main.dashboard'))
 
 @bp.route("/load_search/<int:search_id>")
-# @login_required  # TEMPORARY: Login disabled for testing
+@login_required
 def load_search(search_id):
-    # TEMPORARY FIX: Redirect if not authenticated
-    if not current_user.is_authenticated:
-        flash('Fitur load search memerlukan login', 'info')
-        return redirect(url_for('main.dashboard'))
+    """Load saved search preferences"""
     
     try:
         search_pref = SearchPreference.query.filter_by(
@@ -270,12 +264,9 @@ def load_search(search_id):
         return redirect(url_for('main.dashboard'))
 
 @bp.route("/delete_search/<int:search_id>", methods=["POST"])
-# @login_required  # TEMPORARY: Login disabled for testing
+@login_required
 def delete_search(search_id):
-    # TEMPORARY FIX: Redirect if not authenticated
-    if not current_user.is_authenticated:
-        flash('Fitur delete search memerlukan login', 'info')
-        return redirect(url_for('main.dashboard'))
+    """Delete saved search preferences"""
     
     try:
         search_pref = SearchPreference.query.filter_by(
