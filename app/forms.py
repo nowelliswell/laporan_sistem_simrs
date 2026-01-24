@@ -16,12 +16,6 @@ class LoginForm(FlaskForm):
     ])
 
 class LaporanForm(FlaskForm):
-
-   pelapor = StringField('Pelapor', validators=[
-        DataRequired(message='Nama pelapor wajib diisi'),
-        Length(max=100, message='Nama pelapor maksimal 100 karakter')
-    ])
-    
     unit = RadioField('Unit', 
         choices=[
             ('IGD', '🚑 IGD (Instalasi Gawat Darurat)'),
@@ -41,7 +35,10 @@ class LaporanForm(FlaskForm):
         ],
         validators=[DataRequired(message='Unit wajib dipilih')]
     )
-    
+    pelapor = StringField('Pelapor', validators=[
+        DataRequired(message='Nama pelapor wajib diisi'),
+        Length(max=100, message='Nama pelapor maksimal 100 karakter')
+    ])
     modul_simrs = RadioField('Modul SIMRS', 
         choices=[
             ('Pendaftaran & Front Office', '📋 Pendaftaran & Front Office'),
