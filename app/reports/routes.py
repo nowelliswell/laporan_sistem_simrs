@@ -22,6 +22,9 @@ def tambah_laporan():
                     return render_template("tambah_laporan_modern.html", form=form)
             
             # Create laporan
+            # TEMPORARY FIX: Use None for created_by when not authenticated
+            created_by_id = current_user.id if current_user.is_authenticated else None
+            
             laporan = Laporan(
                 unit=sanitize_input(form.unit.data),
                 pelapor=sanitize_input(form.pelapor.data),
@@ -30,14 +33,15 @@ def tambah_laporan():
                 deskripsi=sanitize_input(form.deskripsi.data),
                 tgl_kejadian=form.tgl_kejadian.data,
                 bukti_file=filename,
-                created_by=current_user.id
+                created_by=created_by_id
             )
             
             db.session.add(laporan)
             db.session.commit()
             
             flash('Laporan berhasil ditambahkan', 'success')
-            current_app.logger.info(f'New report created by {current_user.username}: {laporan.id}')
+            username = current_user.username if current_user.is_authenticated else 'anonymous'
+            current_app.logger.info(f'New report created by {username}: {laporan.id}')
             # Redirect to main dashboard
             return redirect(url_for("main.dashboard"))
             
@@ -84,7 +88,8 @@ def edit_status(id):
             db.session.commit()
             
             flash('Status laporan berhasil diupdate', 'success')
-            current_app.logger.info(f'Report {id} status updated by {current_user.username}: {laporan.status}')
+            username = current_user.username if current_user.is_authenticated else 'anonymous'
+            current_app.logger.info(f'Report {id} status updated by {username}: {laporan.status}')
             return redirect(url_for('reports.detail', id=id))
         
         # Pre-populate form with current values
@@ -121,7 +126,8 @@ def delete_laporan(id):
         db.session.commit()
         
         flash('Laporan berhasil dihapus', 'success')
-        current_app.logger.info(f'Report {id} deleted by {current_user.username}')
+        username = current_user.username if current_user.is_authenticated else 'anonymous'
+        current_app.logger.info(f'Report {id} deleted by {username}')
         return redirect(url_for('main.dashboard'))
         
     except Exception as e:
