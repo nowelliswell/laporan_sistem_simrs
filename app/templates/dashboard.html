@@ -1,0 +1,1346 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Dashboard - BAP SIMRS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-dark: #3730a3;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --surface-hover: #f1f5f9;
+            --border: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: var(--radius-xl);
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header h2 {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .user-info {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .nav-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--primary-color);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Modern Search Panel */
+        .search-panel {
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .search-header {
+            padding: 1.25rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-header:hover {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+        }
+
+        .search-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .search-icon {
+            font-size: 1.25rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .search-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        /* Search Stats */
+        .search-stats {
+            padding: 1rem 1.5rem;
+            background: linear-gradient(90deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .stat-number {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+        }
+
+        /* Dynamic Search Form */
+        .search-form-container {
+            padding: 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+        }
+
+        .search-form-container.active {
+            max-height: 1000px;
+            opacity: 1;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: color 0.2s ease;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            font-size: 0.875rem;
+            background: var(--surface);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-control:hover {
+            border-color: var(--primary-light);
+        }
+
+        /* Custom Select Styling */
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper::after {
+            content: '▼';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+            font-size: 0.75rem;
+            transition: transform 0.2s ease;
+        }
+
+        .select-wrapper:hover::after {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .form-control[type="date"] {
+            position: relative;
+        }
+
+        /* Search Actions */
+        .search-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text-secondary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface-hover);
+            border-color: var(--text-secondary);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Saved Searches */
+        .saved-searches {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .saved-searches-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .saved-search-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .saved-search-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            border-radius: var(--radius-xl);
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .saved-search-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .delete-search {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 1.25rem;
+            height: 1.25rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .delete-search:hover {
+            background: var(--danger-color);
+            transform: scale(1.1);
+        }
+
+        /* Content Area */
+        .content {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .content h3 {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface);
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--surface-hover);
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background: var(--surface-hover);
+        }
+
+        .btn-detail {
+            color: var(--primary-color);
+            text-decoration: none;
+            padding: 0.375rem 0.75rem;
+            border: 1px solid var(--primary-color);
+            border-radius: var(--radius-md);
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-detail:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Status Badges */
+        .status-pending {
+            color: var(--warning-color);
+            font-weight: 600;
+        }
+
+        .status-in_progress {
+            color: #0ea5e9;
+            font-weight: 600;
+        }
+
+        .status-resolved {
+            color: var(--success-color);
+            font-weight: 600;
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            border-radius: var(--radius-lg);
+            border-left: 4px solid;
+            font-size: 0.875rem;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            color: #166534;
+            border-color: var(--success-color);
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: var(--danger-color);
+        }
+
+        .alert-info {
+            background: #f0f9ff;
+            color: #1e40af;
+            border-color: #3b82f6;
+        }
+
+        /* No Data State */
+        .no-data {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .no-data p {
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+        }
+
+        .no-data a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: var(--surface);
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: var(--radius-xl);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close {
+            color: var(--text-muted);
+            float: right;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .close:hover {
+            color: var(--text-primary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.5rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+
+            .search-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn {
+                justify-content: center;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Smooth Transitions */
+        * {
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div>
+                    <h2>Dashboard BAP SIMRS</h2>
+                    <span class="user-info">Selamat datang, {{ current_user.username }}! 👋</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('reports.tambah_laporan') }}">
+                    <span>➕</span> Tambah Laporan
+                </a>
+                <a href="{{ url_for('main.statistik') }}">
+                    <span>📊</span> Statistik
+                </a>
+                {% if current_user.is_authenticated and current_user.is_admin() %}
+                <a href="{{ url_for('users.users') }}">
+                    <span>👥</span> Kelola User
+                </a>
+                {% endif %}
+                <a href="{{ url_for('auth.logout') }}">
+                    <span>🚪</span> Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ 'error' if category == 'error' else category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- Modern Search Panel -->
+        <div class="search-panel">
+            <div class="search-header" onclick="toggleSearchForm()">
+                <div class="search-title">
+                    <span class="search-icon">🔍</span>
+                    <span>Pencarian & Filter Cerdas</span>
+                </div>
+                <button type="button" class="search-toggle">
+                    <span id="toggle-text">Tampilkan Filter</span>
+                </button>
+            </div>
+
+            <!-- Search Statistics -->
+            {% if search_stats %}
+            <div class="search-stats">
+                <div class="stat-item">
+                    <span class="stat-number">{{ search_stats.total }}</span>
+                    <span class="stat-label">Total Laporan</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ search_stats.status_stats.pending }}</span>
+                    <span class="stat-label">Pending</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ search_stats.status_stats.in_progress }}</span>
+                    <span class="stat-label">In Progress</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ search_stats.status_stats.resolved }}</span>
+                    <span class="stat-label">Resolved</span>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Dynamic Search Form -->
+            <div id="search-form" class="search-form-container">
+                <form method="get" action="{{ url_for('main.dashboard') }}" id="searchForm">
+                    <div class="search-form">
+                        <div class="form-group">
+                            {% if search_form.search_query %}
+                            {{ search_form.search_query.label(class="form-label") }}
+                            {{ search_form.search_query(class="form-control", placeholder="🔍 Cari dalam unit, pelapor,
+                            deskripsi...", autocomplete="off") }}
+                            {% else %}
+                            <label class="form-label">Pencarian Global</label>
+                            <input type="text" name="search_query" class="form-control"
+                                placeholder="🔍 Cari dalam unit, pelapor, deskripsi..."
+                                value="{{ request.args.get('search_query', '') }}" autocomplete="off">
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <div class="select-wrapper">
+                                {% if search_form.unit_filter %}
+                                {{ search_form.unit_filter.label(class="form-label") }}
+                                {{ search_form.unit_filter(class="form-control") }}
+                                {% else %}
+                                <label class="form-label">Unit/Departemen</label>
+                                <select name="unit_filter" class="form-control">
+                                    <option value="">🏥 Semua Unit</option>
+                                </select>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="select-wrapper">
+                                {% if search_form.status_filter %}
+                                {{ search_form.status_filter.label(class="form-label") }}
+                                {{ search_form.status_filter(class="form-control") }}
+                                {% else %}
+                                <label class="form-label">Status Laporan</label>
+                                <select name="status_filter" class="form-control">
+                                    <option value="">📋 Semua Status</option>
+                                    <option value="pending" {% if request.args.get('status_filter')=='pending'
+                                        %}selected{% endif %}>⏳ Pending</option>
+                                    <option value="in_progress" {% if request.args.get('status_filter')=='in_progress'
+                                        %}selected{% endif %}>🔄 In Progress</option>
+                                    <option value="resolved" {% if request.args.get('status_filter')=='resolved'
+                                        %}selected{% endif %}>✅ Resolved</option>
+                                </select>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="select-wrapper">
+                                {% if search_form.jenis_filter %}
+                                {{ search_form.jenis_filter.label(class="form-label") }}
+                                {{ search_form.jenis_filter(class="form-control") }}
+                                {% else %}
+                                <label class="form-label">Jenis Kesalahan</label>
+                                <select name="jenis_filter" class="form-control">
+                                    <option value="">🔧 Semua Jenis</option>
+                                    <option value="Data Pasien" {% if request.args.get('jenis_filter')=='Data Pasien'
+                                        %}selected{% endif %}>👤 Data Pasien</option>
+                                    <option value="Transaksi" {% if request.args.get('jenis_filter')=='Transaksi'
+                                        %}selected{% endif %}>💳 Transaksi</option>
+                                    <option value="Sistem Error" {% if request.args.get('jenis_filter')=='Sistem Error'
+                                        %}selected{% endif %}>⚠️ Sistem Error</option>
+                                    <option value="Lainnya" {% if request.args.get('jenis_filter')=='Lainnya'
+                                        %}selected{% endif %}>📝 Lainnya</option>
+                                </select>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            {% if search_form.pelapor_filter %}
+                            {{ search_form.pelapor_filter.label(class="form-label") }}
+                            {{ search_form.pelapor_filter(class="form-control", placeholder="👤 Nama pelapor...") }}
+                            {% else %}
+                            <label class="form-label">Pelapor</label>
+                            <input type="text" name="pelapor_filter" class="form-control"
+                                placeholder="👤 Nama pelapor..." value="{{ request.args.get('pelapor_filter', '') }}">
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            {% if search_form.date_from %}
+                            {{ search_form.date_from.label(class="form-label") }}
+                            {{ search_form.date_from(class="form-control") }}
+                            {% else %}
+                            <label class="form-label">📅 Dari Tanggal</label>
+                            <input type="date" name="date_from" class="form-control"
+                                value="{{ request.args.get('date_from', '') }}">
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            {% if search_form.date_to %}
+                            {{ search_form.date_to.label(class="form-label") }}
+                            {{ search_form.date_to(class="form-control") }}
+                            {% else %}
+                            <label class="form-label">📅 Sampai Tanggal</label>
+                            <input type="date" name="date_to" class="form-control"
+                                value="{{ request.args.get('date_to', '') }}">
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <div class="select-wrapper">
+                                {% if search_form.sort_by %}
+                                {{ search_form.sort_by.label(class="form-label") }}
+                                {{ search_form.sort_by(class="form-control") }}
+                                {% else %}
+                                <label class="form-label">Urutkan berdasarkan</label>
+                                <select name="sort_by" class="form-control">
+                                    <option value="created_at" {% if request.args.get('sort_by', 'created_at'
+                                        )=='created_at' %}selected{% endif %}>📅 Tanggal Dibuat</option>
+                                    <option value="tgl_kejadian" {% if request.args.get('sort_by')=='tgl_kejadian'
+                                        %}selected{% endif %}>⏰ Tanggal Kejadian</option>
+                                    <option value="unit" {% if request.args.get('sort_by')=='unit' %}selected{% endif
+                                        %}>🏥 Unit</option>
+                                    <option value="pelapor" {% if request.args.get('sort_by')=='pelapor' %}selected{%
+                                        endif %}>👤 Pelapor</option>
+                                    <option value="status" {% if request.args.get('sort_by')=='status' %}selected{%
+                                        endif %}>📊 Status</option>
+                                    <option value="jenis_kesalahan" {% if request.args.get('sort_by')=='jenis_kesalahan'
+                                        %}selected{% endif %}>🔧 Jenis Kesalahan</option>
+                                </select>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="select-wrapper">
+                                {% if search_form.sort_order %}
+                                {{ search_form.sort_order.label(class="form-label") }}
+                                {{ search_form.sort_order(class="form-control") }}
+                                {% else %}
+                                <label class="form-label">Urutan</label>
+                                <select name="sort_order" class="form-control">
+                                    <option value="desc" {% if request.args.get('sort_order', 'desc' )=='desc'
+                                        %}selected{% endif %}>⬇️ Terbaru ke Terlama</option>
+                                    <option value="asc" {% if request.args.get('sort_order')=='asc' %}selected{% endif
+                                        %}>⬆️ Terlama ke Terbaru</option>
+                                </select>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="search-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <span>🔍</span> Cari Sekarang
+                        </button>
+                        <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">
+                            <span>🔄</span> Reset Filter
+                        </a>
+                        {% if request.args and request.args|length > 0 %}
+                        <a href="{{ url_for('main.export_results') }}?{{ request.query_string.decode() }}"
+                            class="btn btn-success">
+                            <span>📥</span> Export CSV
+                        </a>
+                        <button type="button" class="btn btn-outline" onclick="showSaveModal()">
+                            <span>💾</span> Simpan Pencarian
+                        </button>
+                        {% endif %}
+                    </div>
+                </form>
+
+                <!-- Saved Searches -->
+                {% if saved_searches %}
+                <div class="saved-searches">
+                    <div class="saved-searches-title">🔖 Pencarian Tersimpan:</div>
+                    <div class="saved-search-tags">
+                        {% for search in saved_searches %}
+                        <span class="saved-search-tag" onclick="applySavedSearch('{{ search.query }}')">
+                            {{ search.name }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="content">
+            <h3>📋 Daftar Laporan Kesalahan SIMRS</h3>
+
+            {% if laporan and laporan.items %}
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Unit</th>
+                            <th>Pelapor</th>
+                            <th>Jenis</th>
+                            <th>Status</th>
+                            <th>Tanggal Dibuat</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for l in laporan.items %}
+                        <tr>
+                            <td><strong>#{{ l.id }}</strong></td>
+                            <td>{{ l.unit }}</td>
+                            <td>{{ l.pelapor }}</td>
+                            <td>{{ l.jenis_kesalahan }}</td>
+                            <td>
+                                <span class="status-{{ l.status }}">
+                                    {% if l.status == 'pending' %}⏳ Pending
+                                    {% elif l.status == 'in_progress' %}🔄 In Progress
+                                    {% elif l.status == 'resolved' %}✅ Resolved
+                                    {% else %}{{ l.status }}
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>{{ format_datetime(l.created_at) }}</td>
+                            <td>
+                                <a href="{{ url_for('reports.detail', id=l.id) }}" class="btn-detail">
+                                    👁️ Detail
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Modern Pagination -->
+            {% if laporan.pages > 1 %}
+            <div class="pagination-container">
+                {% if laporan.has_prev %}
+                <a href="{{ url_for_page(laporan.prev_num) }}" class="pagination-btn">
+                    ← Sebelumnya
+                </a>
+                {% endif %}
+
+                <div class="pagination-numbers">
+                    {% for page_num in laporan.iter_pages() %}
+                    {% if page_num %}
+                    {% if page_num != laporan.page %}
+                    <a href="{{ url_for_page(page_num) }}" class="pagination-number">{{ page_num }}</a>
+                    {% else %}
+                    <span class="pagination-number active">{{ page_num }}</span>
+                    {% endif %}
+                    {% else %}
+                    <span class="pagination-dots">...</span>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+
+                {% if laporan.has_next %}
+                <a href="{{ url_for_page(laporan.next_num) }}" class="pagination-btn">
+                    Selanjutnya →
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="no-data">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+                <p>Tidak ada laporan yang ditemukan.</p>
+                <a href="{{ url_for('reports.tambah_laporan') }}" class="btn btn-primary" style="margin-top: 1rem;">
+                    ➕ Buat laporan baru
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Modern Save Search Modal -->
+        <div id="saveModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeSaveModal()">&times;</span>
+                <h3 style="margin-bottom: 1.5rem; color: var(--text-primary);">💾 Simpan Pencarian</h3>
+                <form method="post" action="{{ url_for('main.save_search') }}">
+                    <!-- Hidden fields to preserve search parameters -->
+                    {% for key, value in request.args.items() %}
+                    <input type="hidden" name="{{ key }}" value="{{ value }}">
+                    {% endfor %}
+
+                    <div class="form-group">
+                        <label class="form-label">Nama Pencarian</label>
+                        <input type="text" name="name" class="form-control" required
+                            placeholder="Contoh: Laporan IGD Pending">
+                    </div>
+
+                    <div style="margin-top: 2rem; display: flex; gap: 0.75rem;">
+                        <button type="submit" class="btn btn-primary">💾 Simpan</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeSaveModal()">❌ Batal</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced Search Form Toggle with Animation
+        function toggleSearchForm() {
+            const form = document.getElementById('search-form');
+            const toggleText = document.getElementById('toggle-text');
+            const isActive = form.classList.contains('active');
+
+            if (!isActive) {
+                form.classList.add('active');
+                toggleText.textContent = 'Sembunyikan Filter';
+                // Add subtle animation to form fields
+                setTimeout(() => {
+                    const formFields = form.querySelectorAll('.form-control');
+                    formFields.forEach((field, index) => {
+                        setTimeout(() => {
+                            field.style.transform = 'translateY(0)';
+                            field.style.opacity = '1';
+                        }, index * 50);
+                    });
+                }, 100);
+            } else {
+                form.classList.remove('active');
+                toggleText.textContent = 'Tampilkan Filter';
+            }
+        }
+
+        // Modal Functions
+        function showSaveModal() {
+            document.getElementById('saveModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSaveModal() {
+            document.getElementById('saveModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Enhanced Form Interactions
+        document.addEventListener('DOMContentLoaded', function () {
+            // Auto-show search form if there are search parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.toString() && !urlParams.has('page')) {
+                toggleSearchForm();
+            }
+
+            // Add real-time search suggestions (basic implementation)
+            const searchInput = document.querySelector('input[name="search_query"]');
+            if (searchInput) {
+                let searchTimeout;
+                searchInput.addEventListener('input', function () {
+                    clearTimeout(searchTimeout);
+                    const query = this.value.trim();
+
+                    if (query.length > 2) {
+                        searchTimeout = setTimeout(() => {
+                            // Add visual feedback for active search
+                            this.style.borderColor = 'var(--primary-color)';
+                            this.style.boxShadow = '0 0 0 3px rgba(79, 70, 229, 0.1)';
+                        }, 300);
+                    } else {
+                        this.style.borderColor = 'var(--border)';
+                        this.style.boxShadow = 'none';
+                    }
+                });
+            }
+
+            // Enhanced form field interactions
+            const formControls = document.querySelectorAll('.form-control');
+            formControls.forEach(control => {
+                // Add floating label effect
+                control.addEventListener('focus', function () {
+                    const label = this.previousElementSibling;
+                    if (label && label.classList.contains('form-label')) {
+                        label.style.color = 'var(--primary-color)';
+                        label.style.transform = 'translateY(-2px)';
+                    }
+                });
+
+                control.addEventListener('blur', function () {
+                    const label = this.previousElementSibling;
+                    if (label && label.classList.contains('form-label')) {
+                        label.style.color = 'var(--text-primary)';
+                        label.style.transform = 'translateY(0)';
+                    }
+                });
+
+                // Add value change animation
+                control.addEventListener('change', function () {
+                    this.style.transform = 'scale(1.02)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+
+            // Smart form validation
+            const searchForm = document.getElementById('searchForm');
+            if (searchForm) {
+                searchForm.addEventListener('submit', function (e) {
+                    const formData = new FormData(this);
+                    let hasFilters = false;
+
+                    for (let [key, value] of formData.entries()) {
+                        if (value.trim() !== '') {
+                            hasFilters = true;
+                            break;
+                        }
+                    }
+
+                    if (!hasFilters) {
+                        e.preventDefault();
+                        // Show gentle reminder
+                        const searchInput = document.querySelector('input[name="search_query"]');
+                        if (searchInput) {
+                            searchInput.focus();
+                            searchInput.placeholder = '💡 Masukkan kata kunci pencarian...';
+                            setTimeout(() => {
+                                searchInput.placeholder = '🔍 Cari dalam unit, pelapor, deskripsi...';
+                            }, 3000);
+                        }
+                    } else {
+                        // Add loading state to submit button
+                        const submitBtn = this.querySelector('button[type="submit"]');
+                        if (submitBtn) {
+                            const originalText = submitBtn.innerHTML;
+                            submitBtn.innerHTML = '<span class="loading"></span> Mencari...';
+                            submitBtn.disabled = true;
+
+                            // Re-enable after a short delay (in case of quick response)
+                            setTimeout(() => {
+                                submitBtn.innerHTML = originalText;
+                                submitBtn.disabled = false;
+                            }, 2000);
+                        }
+                    }
+                });
+            }
+
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function (e) {
+                // Ctrl/Cmd + K to focus search
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    const searchInput = document.querySelector('input[name="search_query"]');
+                    if (searchInput) {
+                        if (!document.getElementById('search-form').classList.contains('active')) {
+                            toggleSearchForm();
+                        }
+                        setTimeout(() => searchInput.focus(), 300);
+                    }
+                }
+
+                // Escape to close modal
+                if (e.key === 'Escape') {
+                    closeSaveModal();
+                }
+            });
+
+            // Add smooth scroll to results after search
+            if (window.location.search && document.querySelector('table')) {
+                setTimeout(() => {
+                    document.querySelector('.content').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 500);
+            }
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function (event) {
+            const modal = document.getElementById('saveModal');
+            if (event.target === modal) {
+                closeSaveModal();
+            }
+        }
+
+        // Add progressive enhancement for better UX
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+
+            // Observe table rows for smooth appearance
+            document.querySelectorAll('tbody tr').forEach(row => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(20px)';
+                row.style.transition = 'all 0.3s ease';
+                observer.observe(row);
+            });
+        }
+    </script>
+
+    <style>
+        /* Additional Pagination Styles */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            padding: 1rem;
+        }
+
+        .pagination-btn {
+            padding: 0.75rem 1.25rem;
+            background: var(--surface);
+            color: var(--primary-color);
+            text-decoration: none;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .pagination-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .pagination-numbers {
+            display: flex;
+            gap: 0.25rem;
+            margin: 0 1rem;
+        }
+
+        .pagination-number {
+            padding: 0.5rem 0.75rem;
+            background: var(--surface);
+            color: var(--text-secondary);
+            text-decoration: none;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            transition: all 0.2s ease;
+            min-width: 2.5rem;
+            text-align: center;
+        }
+
+        .pagination-number:hover {
+            background: var(--surface-hover);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .pagination-number.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .pagination-dots {
+            padding: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        /* Form field initial state for animation */
+        .search-form-container .form-control {
+            transform: translateY(10px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .search-form-container.active .form-control {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Improved focus states */
+        .form-control:focus+.form-label,
+        .form-control:not(:placeholder-shown)+.form-label {
+            color: var(--primary-color);
+        }
+
+        /* Better mobile responsiveness */
+        @media (max-width: 640px) {
+            .pagination-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .pagination-numbers {
+                margin: 0;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .search-stats {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-start;
+            }
+
+            .stat-item {
+                width: 100%;
+                justify-content: space-between;
+                padding: 0.5rem;
+                background: rgba(255, 255, 255, 0.5);
+                border-radius: var(--radius-md);
+            }
+        }
+    </style>
+</body>
+
+</html>

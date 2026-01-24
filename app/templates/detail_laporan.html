@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Detail Laporan #{{ laporan.id }} - BAP SIMRS{% endblock %}
+{% block page_title %}📋 Detail Laporan #{{ laporan.id }}{% endblock %}
+
+{% block content %}
+<div class="content-panel">
+    <div class="panel-header">
+        <span>🔍</span>
+        Detail Laporan Kesalahan SIMRS
+    </div>
+    <div class="panel-content">
+        <div style="display: grid; gap: 1.5rem;">
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                <div style="flex: 1; min-width: 200px;">
+                    <div
+                        style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                        Unit</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">🏥 {{ laporan.unit }}</div>
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <div
+                        style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                        Pelapor</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">👤 {{ laporan.pelapor }}</div>
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <div
+                        style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                        Status</div>
+                    <div>
+                        {% if laporan.status == 'pending' %}
+                        <span class="status-badge status-pending">⏳ Pending</span>
+                        {% elif laporan.status == 'in_progress' %}
+                        <span class="status-badge status-progress">🔄 In Progress</span>
+                        {% elif laporan.status == 'resolved' %}
+                        <span class="status-badge status-completed">✅ Resolved</span>
+                        {% else %}
+                        <span class="status-badge status-pending">{{ laporan.status }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% if laporan.modul_simrs %}
+            <div
+                style="padding: 1rem; background: var(--surface-hover); border-radius: var(--radius-md); border-left: 4px solid var(--primary-color);">
+                <div
+                    style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                    Modul SIMRS</div>
+                <div style="font-weight: 600; color: var(--text-primary);">🖥️ {{ laporan.modul_simrs }}</div>
+            </div>
+            {% endif %}
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                <div style="padding: 1rem; background: var(--surface-hover); border-radius: var(--radius-md);">
+                    <div
+                        style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                        Jenis Kesalahan</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">⚠️ {{ laporan.jenis_kesalahan }}</div>
+                </div>
+
+                <div style="padding: 1rem; background: var(--surface-hover); border-radius: var(--radius-md);">
+                    <div
+                        style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                        Tanggal Kejadian</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">📅 {{
+                        format_datetime(laporan.tgl_kejadian) }}</div>
+                </div>
+
+                <div style="padding: 1rem; background: var(--surface-hover); border-radius: var(--radius-md);">
+                    <div
+                        style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                        Tanggal Dibuat</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">🕒 {{ format_datetime(laporan.created_at)
+                        }}</div>
+                </div>
+            </div>
+
+            {% if laporan.updated_at != laporan.created_at %}
+            <div
+                style="padding: 1rem; background: #fef3c7; border-radius: var(--radius-md); border-left: 4px solid var(--warning-color);">
+                <div
+                    style="font-size: 0.75rem; color: #92400e; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                    Terakhir Diupdate</div>
+                <div style="font-weight: 600; color: #92400e;">🔄 {{ format_datetime(laporan.updated_at) }}</div>
+            </div>
+            {% endif %}
+
+            {% if laporan.creator or laporan.assignee %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                {% if laporan.creator %}
+                <div style="padding: 1rem; background: var(--surface-hover); border-radius: var(--radius-md);">
+                    <div
+                        style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                        Dibuat Oleh</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">👨‍💻 {{ laporan.creator.username }}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if laporan.assignee %}
+                <div style="padding: 1rem; background: var(--surface-hover); border-radius: var(--radius-md);">
+                    <div
+                        style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                        Ditugaskan Ke</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">👨‍🔧 {{ laporan.assignee.username }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div
+                style="padding: 1.5rem; background: var(--surface-hover); border-radius: var(--radius-md); border-left: 4px solid var(--primary-color);">
+                <div
+                    style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">
+                    📝 Deskripsi Masalah</div>
+                <div style="white-space: pre-wrap; line-height: 1.6; color: var(--text-primary);">{{ laporan.deskripsi
+                    }}</div>
+            </div>
+
+            {% if laporan.bukti_file %}
+            <div
+                style="padding: 1.5rem; background: #f0f9ff; border-radius: var(--radius-md); border-left: 4px solid var(--primary-color);">
+                <div
+                    style="font-size: 0.75rem; color: var(--primary-color); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">
+                    📎 Bukti File</div>
+                <a href="{{ url_for('static', filename='uploads/' + laporan.bukti_file) }}" target="_blank"
+                    class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <span>📄</span> Download {{ laporan.bukti_file }}
+                </a>
+            </div>
+            {% endif %}
+
+            <div
+                style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">
+                    <span>←</span> Kembali ke Dashboard
+                </a>
+                {% if current_user.is_authenticated and current_user.is_admin() %}
+                <a href="{{ url_for('reports.edit_status', id=laporan.id) }}" class="btn btn-primary">
+                    <span>✏️</span> Edit Status
+                </a>
+                <a href="{{ url_for('reports.delete_laporan', id=laporan.id) }}" class="btn btn-danger"
+                    onclick="return confirm('Apakah Anda yakin ingin menghapus laporan ini?')">
+                    <span>🗑️</span> Hapus Laporan
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

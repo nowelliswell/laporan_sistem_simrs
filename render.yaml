@@ -1,0 +1,32 @@
+# Render Blueprint untuk BAP SIMRS
+# File ini akan otomatis setup Web Service + PostgreSQL
+
+services:
+  # Web Service
+  - type: web
+    name: bap-simrs
+    env: python
+    region: singapore
+    plan: free
+    branch: main
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn run:app"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bap-simrs-db
+          property: connectionString
+
+databases:
+  # PostgreSQL Database
+  - name: bap-simrs-db
+    region: singapore
+    plan: free
+    databaseName: bap_simrs
+    user: bap_simrs_user

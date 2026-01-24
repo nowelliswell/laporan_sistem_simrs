@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Tambah User - BAP SIMRS{% endblock %}
+{% block page_title %}➕ Tambah User{% endblock %}
+
+{% block content %}
+<div class="content-panel" style="max-width: 600px; margin: 0 auto;">
+    <div class="panel-header">
+        <span>👤</span>
+        Tambah User Baru
+    </div>
+    <div class="panel-content">
+        <form method="post" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+                {{ form.username.label(class="form-label") }}
+                <span style="color: var(--danger-color);">*</span>
+                {{ form.username(class="form-input", placeholder="Username untuk login sistem") }}
+                {% if form.username.errors %}
+                {% for error in form.username.errors %}
+                <div style="color: var(--danger-color); font-size: 0.75rem; margin-top: 0.25rem;">{{ error }}</div>
+                {% endfor %}
+                {% endif %}
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+                    💡 Username harus unik dan akan digunakan untuk login
+                </div>
+            </div>
+
+            <div class="form-group">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-input", placeholder="email@example.com (opsional)") }}
+                {% if form.email.errors %}
+                {% for error in form.email.errors %}
+                <div style="color: var(--danger-color); font-size: 0.75rem; margin-top: 0.25rem;">{{ error }}</div>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.unit.label(class="form-label") }}
+                {{ form.unit(class="form-input", placeholder="Contoh: IGD, Rawat Inap, IT") }}
+                {% if form.unit.errors %}
+                {% for error in form.unit.errors %}
+                <div style="color: var(--danger-color); font-size: 0.75rem; margin-top: 0.25rem;">{{ error }}</div>
+                {% endfor %}
+                {% endif %}
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+                    🏥 Unit kerja user di rumah sakit
+                </div>
+            </div>
+
+            <div class="form-group">
+                {{ form.password.label(class="form-label") }}
+                <span style="color: var(--danger-color);">*</span>
+                {{ form.password(class="form-input", placeholder="Password minimal 6 karakter") }}
+                {% if form.password.errors %}
+                {% for error in form.password.errors %}
+                <div style="color: var(--danger-color); font-size: 0.75rem; margin-top: 0.25rem;">{{ error }}</div>
+                {% endfor %}
+                {% endif %}
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+                    🔒 Gunakan password yang kuat untuk keamanan
+                </div>
+            </div>
+
+            <div class="form-group">
+                {{ form.role.label(class="form-label") }}
+                <span style="color: var(--danger-color);">*</span>
+                {{ form.role(class="form-select") }}
+                {% if form.role.errors %}
+                {% for error in form.role.errors %}
+                <div style="color: var(--danger-color); font-size: 0.75rem; margin-top: 0.25rem;">{{ error }}</div>
+                {% endfor %}
+                {% endif %}
+                <div
+                    style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; padding: 0.75rem; background: var(--surface-hover); border-radius: var(--radius-sm);">
+                    <strong>🔑 Perbedaan Role:</strong><br>
+                    • <strong>Admin:</strong> Dapat mengelola user, edit status laporan, dan akses penuh<br>
+                    • <strong>User:</strong> Dapat membuat laporan dan melihat laporan sendiri
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary">
+                    <span>💾</span> Simpan User
+                </button>
+                <a href="{{ url_for('users.users') }}" class="btn btn-secondary">
+                    <span>❌</span> Batal
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
