@@ -83,11 +83,20 @@ def dashboard():
                              saved_searches=saved_searches,
                              url_for_page=url_for_page)
     except Exception as e:
-        current_app.logger.error(f'Dashboard error: {str(e)}')
+        current_app.logger.error(f'Dashboard error: {str(e)}', exc_info=True)
         flash('Terjadi kesalahan saat memuat dashboard', 'error')
-        # Create empty search form for error case
+        # Create empty search form and pagination for error case
         search_form = SearchForm()
-        return render_template("dashboard.html", laporan=None, search_form=search_form)
+        # Create empty pagination object
+        from flask_sqlalchemy import Pagination
+        empty_pagination = Laporan.query.filter(Laporan.id == -1).paginate(page=1, per_page=10, error_out=False)
+        return render_template("dashboard.html", 
+                             laporan=empty_pagination, 
+                             search_form=search_form,
+                             search_stats={'total': 0, 'pending': 0, 'in_progress': 0, 'resolved': 0},
+                             saved_searches=[],
+                             url_for_page=lambda p: url_for('main.dashboard', page=p),
+                             format_datetime=format_datetime)
 
 # ======================
 # SEARCH & EXPORT ROUTES
