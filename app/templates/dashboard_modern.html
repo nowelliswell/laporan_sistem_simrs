@@ -26,7 +26,7 @@
                 <i data-lucide="clock"></i>
             </div>
         </div>
-        <div class="stat-value">{{ search_stats.pending if search_stats else 0 }}</div>
+        <div class="stat-value">{{ search_stats.status_stats.pending if search_stats and search_stats.status_stats else 0 }}</div>
         <div class="stat-label">Pending</div>
     </div>
 
@@ -36,7 +36,7 @@
                 <i data-lucide="loader"></i>
             </div>
         </div>
-        <div class="stat-value">{{ search_stats.in_progress if search_stats else 0 }}</div>
+        <div class="stat-value">{{ search_stats.status_stats.in_progress if search_stats and search_stats.status_stats else 0 }}</div>
         <div class="stat-label">In Progress</div>
     </div>
 
@@ -46,7 +46,7 @@
                 <i data-lucide="check-circle"></i>
             </div>
         </div>
-        <div class="stat-value">{{ search_stats.resolved if search_stats else 0 }}</div>
+        <div class="stat-value">{{ search_stats.status_stats.resolved if search_stats and search_stats.status_stats else 0 }}</div>
         <div class="stat-label">Resolved</div>
     </div>
 </div>

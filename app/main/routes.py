@@ -93,7 +93,7 @@ def dashboard():
         return render_template("dashboard_modern.html", 
                              laporan=empty_pagination, 
                              search_form=search_form,
-                             search_stats={'total': 0, 'pending': 0, 'in_progress': 0, 'resolved': 0},
+                             search_stats={'total': 0, 'status_stats': {'pending': 0, 'in_progress': 0, 'resolved': 0}},
                              saved_searches=[],
                              url_for_page=lambda p: url_for('main.dashboard', page=p),
                              format_datetime=format_datetime)
