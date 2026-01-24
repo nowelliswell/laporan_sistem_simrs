@@ -42,7 +42,7 @@ def login():
             current_app.logger.error(f'Login error: {str(e)}')
             flash('Terjadi kesalahan saat login', 'error')
     
-    return render_template("login.html", form=form)
+    return render_template("login_modern.html", form=form)
 
 @bp.route("/logout")
 @login_required

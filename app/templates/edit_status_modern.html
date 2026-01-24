@@ -1,0 +1,168 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Edit Status Laporan #{{ laporan.id }} - BAP SIMRS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+        <a href="{{ url_for('reports.detail', id=laporan.id) }}" class="icon-button">
+            <i data-lucide="arrow-left"></i>
+        </a>
+        <h1 class="page-title">Edit Status Laporan #{{ laporan.id }}</h1>
+    </div>
+    <p class="page-subtitle">Ubah status dan assignment laporan</p>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 400px; gap: 1.5rem;">
+    <!-- Form -->
+    <div class="card">
+        <div class="card-header">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <i data-lucide="edit-3"></i>
+                <h3 class="card-title">Form Edit Status</h3>
+            </div>
+        </div>
+        <div class="card-body">
+            <form method="post" novalidate>
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group">
+                    {{ form.status.label(class="form-label") }}
+                    <span style="color: var(--error);">*</span>
+                    {{ form.status(class="form-select") }}
+                    {% if form.status.errors %}
+                        {% for error in form.status.errors %}
+                            <div style="color: var(--error); font-size: 12px; margin-top: 0.5rem;">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <!-- Status Guide -->
+                    <div style="margin-top: 1rem; padding: 1rem; background: var(--background); border-radius: var(--radius-md); font-size: 13px;">
+                        <div style="font-weight: 600; margin-bottom: 0.75rem; color: var(--text-primary);">
+                            <i data-lucide="info" style="width: 16px; height: 16px;"></i>
+                            Panduan Status
+                        </div>
+                        <ul style="margin: 0; padding-left: 1.5rem; color: var(--text-secondary); line-height: 1.8;">
+                            <li><strong>Pending:</strong> Laporan belum ditangani</li>
+                            <li><strong>In Progress:</strong> Sedang dalam proses penanganan</li>
+                            <li><strong>Resolved:</strong> Masalah sudah selesai ditangani</li>
+                        </ul>
+                    </div>
+                </div>
+
+                {% if current_user.is_authenticated and current_user.is_admin() %}
+                <div class="form-group">
+                    {{ form.assigned_to.label(class="form-label") }}
+                    {{ form.assigned_to(class="form-select") }}
+                    {% if form.assigned_to.errors %}
+                        {% for error in form.assigned_to.errors %}
+                            <div style="color: var(--error); font-size: 12px; margin-top: 0.5rem;">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                    <div style="margin-top: 0.5rem; font-size: 12px; color: var(--text-secondary);">
+                        <i data-lucide="user-check" style="width: 14px; height: 14px;"></i>
+                        Pilih user untuk menugaskan laporan ini
+                    </div>
+                </div>
+                {% endif %}
+
+                <div style="display: flex; gap: 0.75rem; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary">
+                        <i data-lucide="save"></i>
+                        Update Status
+                    </button>
+                    <a href="{{ url_for('reports.detail', id=laporan.id) }}" class="btn btn-secondary">
+                        <i data-lucide="x"></i>
+                        Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Info Sidebar -->
+    <div>
+        <!-- Current Info -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="card-title">Informasi Laporan</h3>
+            </div>
+            <div class="card-body">
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 0.5rem;">UNIT</div>
+                        <div style="font-weight: 600; color: var(--text-primary);">{{ laporan.unit }}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 0.5rem;">PELAPOR</div>
+                        <div style="font-weight: 600; color: var(--text-primary);">{{ laporan.pelapor }}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 0.5rem;">JENIS KESALAHAN</div>
+                        <div style="font-weight: 600; color: var(--text-primary);">{{ laporan.jenis_kesalahan }}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 0.5rem;">STATUS SAAT INI</div>
+                        {% if laporan.status == 'pending' %}
+                            <span class="badge badge-pending">
+                                <i data-lucide="clock"></i>
+                                Pending
+                            </span>
+                        {% elif laporan.status == 'in_progress' %}
+                            <span class="badge badge-progress">
+                                <i data-lucide="loader"></i>
+                                In Progress
+                            </span>
+                        {% elif laporan.status == 'resolved' %}
+                            <span class="badge badge-success">
+                                <i data-lucide="check-circle"></i>
+                                Resolved
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 0.5rem;">TANGGAL DIBUAT</div>
+                        <div style="font-weight: 600; color: var(--text-primary);">{{ format_datetime(laporan.created_at) }}</div>
+                    </div>
+                    {% if laporan.assignee %}
+                    <div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 0.5rem;">DITUGASKAN KE</div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div class="user-avatar" style="width: 24px; height: 24px; font-size: 10px;">
+                                {{ laporan.assignee.username[0].upper() }}
+                            </div>
+                            <span style="font-weight: 600; color: var(--text-primary);">{{ laporan.assignee.username }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Quick Actions</h3>
+            </div>
+            <div class="card-body">
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <a href="{{ url_for('reports.detail', id=laporan.id) }}" class="btn btn-secondary" style="width: 100%; justify-content: center;">
+                        <i data-lucide="eye"></i>
+                        Lihat Detail
+                    </a>
+                    <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary" style="width: 100%; justify-content: center;">
+                        <i data-lucide="layout-dashboard"></i>
+                        Ke Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    lucide.createIcons();
+</script>
+{% endblock %}

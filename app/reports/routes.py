@@ -53,7 +53,7 @@ def tambah_laporan():
 def detail(id):
     try:
         laporan = Laporan.query.get_or_404(id)
-        return render_template("detail_laporan.html", laporan=laporan, format_datetime=format_datetime)
+        return render_template("detail_laporan_modern.html", laporan=laporan, format_datetime=format_datetime)
     except Exception as e:
         current_app.logger.error(f'Error loading report detail: {str(e)}')
         flash('Laporan tidak ditemukan', 'error')
@@ -93,7 +93,7 @@ def edit_status(id):
             if current_user.is_authenticated and current_user.is_admin():
                 form.assigned_to.data = laporan.assigned_to if laporan.assigned_to else 0
         
-        return render_template("edit_status.html", form=form, laporan=laporan, format_datetime=format_datetime)
+        return render_template("edit_status_modern.html", form=form, laporan=laporan, format_datetime=format_datetime)
         
     except Exception as e:
         current_app.logger.error(f'Error editing status: {str(e)}')

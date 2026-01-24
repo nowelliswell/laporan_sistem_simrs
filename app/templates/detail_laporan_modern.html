@@ -1,0 +1,206 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Detail Laporan #{{ laporan.id }} - BAP SIMRS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+        <a href="{{ url_for('main.dashboard') }}" class="icon-button">
+            <i data-lucide="arrow-left"></i>
+        </a>
+        <h1 class="page-title">Detail Laporan #{{ laporan.id }}</h1>
+    </div>
+    <p class="page-subtitle">Informasi lengkap laporan kesalahan SIMRS</p>
+</div>
+
+<!-- Status Banner -->
+<div class="card mb-4" style="border-left: 4px solid {% if laporan.status == 'pending' %}#F59E0B{% elif laporan.status == 'in_progress' %}#06B6D4{% else %}#22C55E{% endif %};">
+    <div class="card-body">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 0.5rem;">STATUS LAPORAN</div>
+                {% if laporan.status == 'pending' %}
+                    <span class="badge badge-pending" style="font-size: 14px; padding: 0.5rem 1rem;">
+                        <i data-lucide="clock"></i>
+                        Pending
+                    </span>
+                {% elif laporan.status == 'in_progress' %}
+                    <span class="badge badge-progress" style="font-size: 14px; padding: 0.5rem 1rem;">
+                        <i data-lucide="loader"></i>
+                        In Progress
+                    </span>
+                {% elif laporan.status == 'resolved' %}
+                    <span class="badge badge-success" style="font-size: 14px; padding: 0.5rem 1rem;">
+                        <i data-lucide="check-circle"></i>
+                        Resolved
+                    </span>
+                {% endif %}
+            </div>
+            <div style="display: flex; gap: 0.75rem;">
+                <a href="{{ url_for('reports.edit_status', id=laporan.id) }}" class="btn btn-primary">
+                    <i data-lucide="edit"></i>
+                    Edit Status
+                </a>
+                {% if current_user.is_authenticated and current_user.is_admin() %}
+                <button class="btn btn-danger" onclick="if(confirm('Yakin hapus laporan ini?')) window.location.href='{{ url_for('reports.delete_laporan', id=laporan.id) }}'">
+                    <i data-lucide="trash-2"></i>
+                    Hapus
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Info Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+    <!-- Unit & Pelapor -->
+    <div class="card">
+        <div class="card-body">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="stat-icon primary">
+                    <i data-lucide="building-2"></i>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 0.25rem;">UNIT</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">{{ laporan.unit }}</div>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="stat-icon secondary">
+                    <i data-lucide="user"></i>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 0.25rem;">PELAPOR</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">{{ laporan.pelapor }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jenis & Modul -->
+    <div class="card">
+        <div class="card-body">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="stat-icon warning">
+                    <i data-lucide="alert-triangle"></i>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 0.25rem;">JENIS KESALAHAN</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">{{ laporan.jenis_kesalahan }}</div>
+                </div>
+            </div>
+            {% if laporan.modul_simrs %}
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="stat-icon success">
+                    <i data-lucide="monitor"></i>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 0.25rem;">MODUL SIMRS</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">{{ laporan.modul_simrs }}</div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="card">
+        <div class="card-body">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="stat-icon primary">
+                    <i data-lucide="calendar"></i>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 0.25rem;">TANGGAL KEJADIAN</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">{{ format_datetime(laporan.tgl_kejadian) }}</div>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="stat-icon secondary">
+                    <i data-lucide="clock"></i>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 0.25rem;">TANGGAL DIBUAT</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">{{ format_datetime(laporan.created_at) }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Deskripsi -->
+<div class="card mb-4">
+    <div class="card-header">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <i data-lucide="file-text"></i>
+            <h3 class="card-title">Deskripsi Masalah</h3>
+        </div>
+    </div>
+    <div class="card-body">
+        <p style="white-space: pre-wrap; line-height: 1.8; color: var(--text-primary);">{{ laporan.deskripsi }}</p>
+    </div>
+</div>
+
+<!-- Bukti File -->
+{% if laporan.bukti_file %}
+<div class="card mb-4">
+    <div class="card-header">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <i data-lucide="paperclip"></i>
+            <h3 class="card-title">Bukti File</h3>
+        </div>
+    </div>
+    <div class="card-body">
+        <a href="{{ url_for('static', filename='uploads/' + laporan.bukti_file) }}" target="_blank" class="btn btn-secondary">
+            <i data-lucide="download"></i>
+            Download {{ laporan.bukti_file }}
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<!-- Assignment Info -->
+{% if laporan.creator or laporan.assignee %}
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+    {% if laporan.creator %}
+    <div class="card">
+        <div class="card-body">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="user-avatar" style="width: 48px; height: 48px; font-size: 18px;">
+                    {{ laporan.creator.username[0].upper() }}
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 0.25rem;">DIBUAT OLEH</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">{{ laporan.creator.username }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if laporan.assignee %}
+    <div class="card">
+        <div class="card-body">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="user-avatar" style="width: 48px; height: 48px; font-size: 18px; background: var(--secondary);">
+                    {{ laporan.assignee.username[0].upper() }}
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 0.25rem;">DITUGASKAN KE</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">{{ laporan.assignee.username }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    lucide.createIcons();
+</script>
+{% endblock %}
