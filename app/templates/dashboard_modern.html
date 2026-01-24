@@ -123,10 +123,37 @@
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">Daftar Laporan</h3>
-        <a href="{{ url_for('reports.tambah_laporan') }}" class="btn btn-primary">
-            <i data-lucide="plus"></i>
-            Tambah Laporan
-        </a>
+        <div style="display: flex; gap: 0.75rem;">
+            <div x-data="{ open: false }" style="position: relative;">
+                <button @click="open = !open" class="btn btn-secondary">
+                    <i data-lucide="download"></i>
+                    Export
+                    <i data-lucide="chevron-down"></i>
+                </button>
+                <div x-show="open" @click.away="open = false" 
+                     style="position: absolute; top: 100%; right: 0; margin-top: 0.5rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); min-width: 150px; z-index: 50;"
+                     x-transition>
+                    <a href="{{ url_for('main.export_results', format='csv', **request.args) }}" 
+                       style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: var(--text-primary); text-decoration: none; transition: background 0.2s;"
+                       onmouseover="this.style.background='var(--background)'"
+                       onmouseout="this.style.background='transparent'">
+                        <i data-lucide="file-text"></i>
+                        <span>Export CSV</span>
+                    </a>
+                    <a href="{{ url_for('main.export_results', format='excel', **request.args) }}" 
+                       style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: var(--text-primary); text-decoration: none; transition: background 0.2s;"
+                       onmouseover="this.style.background='var(--background)'"
+                       onmouseout="this.style.background='transparent'">
+                        <i data-lucide="file-spreadsheet"></i>
+                        <span>Export Excel</span>
+                    </a>
+                </div>
+            </div>
+            <a href="{{ url_for('reports.tambah_laporan') }}" class="btn btn-primary">
+                <i data-lucide="plus"></i>
+                Tambah Laporan
+            </a>
+        </div>
     </div>
     
     <div class="table-container">

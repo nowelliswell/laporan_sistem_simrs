@@ -140,6 +140,7 @@ def search():
 @bp.route("/export")
 @login_required
 def export_results():
+    """Export laporan to CSV or Excel"""
     try:
         # Build query based on current search parameters
         query = build_search_query(request.args)
@@ -156,6 +157,67 @@ def export_results():
             return Response(
                 csv_data,
                 mimetype='text/csv',
+                headers={'Content-Disposition': f'attachment; filename={filename}'}
+            )
+        elif export_format == 'excel':
+            # Excel export
+            import io
+            from openpyxl import Workbook
+            from openpyxl.styles import Font, PatternFill, Alignment
+            
+            wb = Workbook()
+            ws = wb.active
+            ws.title = "Laporan SIMRS"
+            
+            # Header styling
+            header_fill = PatternFill(start_color="4F46E5", end_color="4F46E5", fill_type="solid")
+            header_font = Font(bold=True, color="FFFFFF")
+            
+            # Headers
+            headers = ['ID', 'Unit', 'Pelapor', 'Modul SIMRS', 'Jenis Kesalahan', 
+                      'Deskripsi', 'Tanggal Kejadian', 'Status', 'Tanggal Dibuat']
+            
+            for col, header in enumerate(headers, 1):
+                cell = ws.cell(row=1, column=col, value=header)
+                cell.fill = header_fill
+                cell.font = header_font
+                cell.alignment = Alignment(horizontal='center')
+            
+            # Data rows
+            for row_idx, laporan in enumerate(laporan_list, 2):
+                ws.cell(row=row_idx, column=1, value=laporan.id)
+                ws.cell(row=row_idx, column=2, value=laporan.unit)
+                ws.cell(row=row_idx, column=3, value=laporan.pelapor)
+                ws.cell(row=row_idx, column=4, value=laporan.modul_simrs or '')
+                ws.cell(row=row_idx, column=5, value=laporan.jenis_kesalahan)
+                ws.cell(row=row_idx, column=6, value=laporan.deskripsi)
+                ws.cell(row=row_idx, column=7, value=laporan.tgl_kejadian.strftime('%Y-%m-%d %H:%M') if laporan.tgl_kejadian else '')
+                ws.cell(row=row_idx, column=8, value=laporan.status)
+                ws.cell(row=row_idx, column=9, value=laporan.created_at.strftime('%Y-%m-%d %H:%M') if laporan.created_at else '')
+            
+            # Auto-adjust column widths
+            for column in ws.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = min(max_length + 2, 50)
+                ws.column_dimensions[column_letter].width = adjusted_width
+            
+            # Save to bytes
+            output = io.BytesIO()
+            wb.save(output)
+            output.seek(0)
+            
+            filename = f"laporan_simrs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+            
+            return Response(
+                output.getvalue(),
+                mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                 headers={'Content-Disposition': f'attachment; filename={filename}'}
             )
         

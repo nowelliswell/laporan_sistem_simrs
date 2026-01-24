@@ -19,7 +19,7 @@
     <style>
         /* ===== Design System ===== */
         :root {
-            /* Colors */
+            /* Colors - Light Mode */
             --primary: #4F46E5;
             --secondary: #06B6D4;
             --success: #22C55E;
@@ -45,6 +45,15 @@
             /* Spacing */
             --sidebar-width: 240px;
             --header-height: 64px;
+        }
+
+        /* Dark Mode Colors */
+        [data-theme="dark"] {
+            --background: #0F172A;
+            --card: #1E293B;
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --border: #334155;
         }
 
         /* ===== Reset & Base ===== */
@@ -521,6 +530,11 @@
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
             }
             
             .main-content {
@@ -530,15 +544,130 @@
             .stats-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .mobile-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 35;
+            }
+            
+            .mobile-overlay.active {
+                display: block;
+            }
+        }
+
+        /* ===== Toast Notifications ===== */
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-width: 400px;
+        }
+
+        .toast {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-left: 4px solid;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.success { border-color: var(--success); }
+        .toast.error { border-color: var(--error); }
+        .toast.info { border-color: var(--secondary); }
+
+        .toast-close {
+            margin-left: auto;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .toast-close:hover {
+            opacity: 1;
+        }
+
+        /* ===== Mobile Menu Button ===== */
+        .mobile-menu-btn {
+            display: none;
+            width: 40px;
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md);
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            .header-search {
+                display: none;
+            }
+        }
+
+        /* ===== Theme Toggle ===== */
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md);
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--background);
+            color: var(--text-primary);
         }
     </style>
     
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body x-data="{ theme: localStorage.getItem('theme') || 'light', mobileMenuOpen: false }" 
+      x-init="$watch('theme', val => { localStorage.setItem('theme', val); document.documentElement.setAttribute('data-theme', val) })"
+      :data-theme="theme">
+    
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" :class="{ 'active': mobileMenuOpen }" @click="mobileMenuOpen = false"></div>
+    
     <div class="app-layout">
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" :class="{ 'mobile-open': mobileMenuOpen }">
             <div class="sidebar-header">
                 <div class="sidebar-logo">
                     <i data-lucide="activity"></i>
@@ -577,11 +706,22 @@
             <!-- Header -->
             <header class="header">
                 <div class="header-content">
-                    <div class="header-search">
-                        <input type="text" class="search-input" placeholder="Cari laporan...">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <button class="mobile-menu-btn" @click="mobileMenuOpen = !mobileMenuOpen">
+                            <i data-lucide="menu"></i>
+                        </button>
+                        
+                        <div class="header-search">
+                            <input type="text" class="search-input" placeholder="Cari laporan...">
+                        </div>
                     </div>
                     
                     <div class="header-actions">
+                        <button class="theme-toggle" @click="theme = theme === 'light' ? 'dark' : 'light'" title="Toggle Dark Mode">
+                            <i data-lucide="moon" x-show="theme === 'light'"></i>
+                            <i data-lucide="sun" x-show="theme === 'dark'"></i>
+                        </button>
+                        
                         <button class="icon-button">
                             <i data-lucide="bell"></i>
                         </button>
@@ -599,18 +739,6 @@
 
             <!-- Content -->
             <div class="content">
-                <!-- Flash Messages -->
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category if category in ['success', 'error', 'info'] else 'info' }}">
-                                <i data-lucide="{% if category == 'success' %}check-circle{% elif category == 'error' %}alert-circle{% else %}info{% endif %}"></i>
-                                <span>{{ message }}</span>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-
                 {% block content %}{% endblock %}
             </div>
         </main>
@@ -619,6 +747,46 @@
     <!-- Initialize Lucide Icons -->
     <script>
         lucide.createIcons();
+        
+        // Toast Notification System
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icon = type === 'success' ? 'check-circle' : 
+                        type === 'error' ? 'alert-circle' : 'info';
+            
+            toast.innerHTML = `
+                <i data-lucide="${icon}"></i>
+                <span>${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">
+                    <i data-lucide="x"></i>
+                </button>
+            `;
+            
+            container.appendChild(toast);
+            lucide.createIcons();
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+        
+        // Show flash messages as toasts
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    showToast('{{ message }}', '{{ category if category in ["success", "error", "info"] else "info" }}');
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        // Initialize theme on page load
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
     </script>
     
     {% block extra_js %}{% endblock %}
